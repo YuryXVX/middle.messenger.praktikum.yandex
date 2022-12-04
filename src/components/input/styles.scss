@@ -1,0 +1,27 @@
+.chat {
+  &__input-control {
+    display: block;
+    width: 100%;
+
+    padding: 10px 5px;
+
+    &--main {
+      border-radius: 8px;
+      border: 2px solid var(--main-color);
+    }
+
+    &--borderless {
+      width: auto;
+      text-align: end;
+      border: none;
+
+      outline: 0;
+
+      &:focus,
+      &:hover {
+        outline: 0;
+        border: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+.chat {
+  display: flex;
+
+  &__chat-list {
+    width: 351px;
+
+    border-right: 1px solid var(--separator-color);
+
+    background-color: var(--secondary-color);
+  }
+
+  &__messages-list {
+    flex: 1;
+
+    display: flex;
+  }
+}
+
+.chat-list {
+  &__header-wrap {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  &__header-link {
+    margin-bottom: 12px;
+    align-self: end;
+  }
+}
+
+.messages {
+  justify-content: center;
+
+  &--empty {
+    display: flex;
+    align-items: center;
+  }
+}

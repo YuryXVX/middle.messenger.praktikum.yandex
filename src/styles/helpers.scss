@@ -1,0 +1,35 @@
+.content-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// врменное решение тк пока хедер захардкожен в html
+.app__header {
+  height: var(--header-heigth);
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+
+  border-bottom: 1px solid var(--separator-color);
+}
+
+.app__links {
+  & > a {
+    margin: 0 15px;
+  }
+}
+
+.app__page {
+  height: calc(100vh - var(--header-heigth));
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

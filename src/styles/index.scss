@@ -1,0 +1,16 @@
+@import url('./normalized.scss');
+@import url('./helpers.scss');
+@import url('./fonts.scss');
+
+:root {
+  --main-color: #3369F3;
+  --secondary-color: #FBFBFB;
+  --separator-color: #EAEAEA;
+
+  --header-heigth: 50px;
+}
+
+body {
+  box-sizing: border-box;
+  font-family: 'SourceSansRegular', 'SourceSansProLight', 'SourceSansProBold', 'Helvetica Neue', Helvetica, sans-serif;
+}

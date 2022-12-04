@@ -1,0 +1,22 @@
+.not-found {
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 200px;
+    & > h3 {
+      font-size: 40px;
+      text-transform: uppercase;
+
+      margin: 0;
+      margin-bottom: 15px;
+    }
+
+    & > p {
+      font-size: 20px;
+      margin: 0;
+      margin-bottom: 15px;
+    }
+  }
+} 

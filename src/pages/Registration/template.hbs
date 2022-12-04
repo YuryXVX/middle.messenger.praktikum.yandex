@@ -1,0 +1,39 @@
+<div class="content-center app__page">
+  <form class="form">
+    <div class="form__wrap">
+      <legend class="form__title-legend">Регистрация</legend>
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Почта" name="email" }}
+      </fieldset>
+      
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Логин" name="login" }}
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Имя" name="first_name" }}
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Фамилия" name="second_name" }}
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Телефон" name="phone" }}
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Пароль" type="password" name="password" }}
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Пароль (еще раз)" type="password" }}
+      </fieldset>
+
+      <div class="form__buttons">
+        {{> button content="Зарегистрироваться" variant="main" }}
+        {{> link content="Войти" href="/" variant="block" }}
+      </div>
+    </div>
+  </form>
+</div>
