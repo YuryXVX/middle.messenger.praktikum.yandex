@@ -1,5 +1,5 @@
 import AuthPage from './Auth';
-import ChangePasswordPage from './ChangePassword';
+import UserChangePassword from './UserChangePassword';
 import ChatPage from './Chat';
 import ErrorPage from './Error';
 import NotFoundPage from './NotFound';
@@ -15,6 +15,6 @@ export const PAGES = {
   '/error': ErrorPage, 
   '/registration': RegistrationPage,
   '/user': UserPage,
-  '/change-password': ChangePasswordPage,
+  '/user-change-password': UserChangePassword,
   '/user-settings': UserSettingsPage,
 };

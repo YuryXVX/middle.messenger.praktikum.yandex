@@ -1,4 +1,5 @@
 import { Avatar } from './avatar';
+import { BackToView } from './back-to-view-panel';
 import { Button } from './button/button';
 import { Input } from './input/input';
 import { Link } from './link';
@@ -9,5 +10,6 @@ export const ComponentsMap = {
   'input': Input,
   'link': Link,
   'avatar': Avatar,
-  'list-item': ListItem
+  'list-item': ListItem,
+  'back-to-button': BackToView,
 }

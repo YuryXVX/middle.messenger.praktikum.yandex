@@ -1,4 +1,5 @@
 <div class="content-center">
+  {{> back-to-button href="/"}}
   <div class="user-page">
     <div class="user-page__avatar">
       {{>avatar src=avatar }}
@@ -22,7 +23,7 @@
           {{> link content="Изменить данные" href="/user-settings"}}
         </li>
         <li>
-          {{> link content="Изменить пароль" href="/change-password" }}
+          {{> link content="Изменить пароль" href="/user-change-password" }}
         </li>      
         <li>
           {{> link content="Выйти" }}
