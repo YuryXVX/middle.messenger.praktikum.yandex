@@ -6,6 +6,9 @@
     box-sizing: border-box;
     padding: 10px 5px;
 
+    border-radius: 8px;
+
+
     &--main {
       border-radius: 8px;
       border: 2px solid var(--main-color);
@@ -37,5 +40,18 @@
         border: none;
       }
     }
+
+    &--error {
+      border-color: var(--error-color);
+
+      &:focus,
+      &:hover {
+        outline: 0;
+      }
+    }
+  }
+
+  &__input-text-error {
+    color: var(--error-color);
   }
 }

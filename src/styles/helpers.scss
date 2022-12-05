@@ -35,3 +35,25 @@ ul {
   margin: 0;
   padding: 0;
 }
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 1000;
+
+  &__overlay {
+    position: absolute;
+
+    background: #000000;
+    opacity: 0.4;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
