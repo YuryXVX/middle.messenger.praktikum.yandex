@@ -10,7 +10,7 @@ Chat - веб-мессенджер
 - `npm run start` — сборка build версии и поднятие node.js сервера.
 
 ## Ссылка на netlify
-https://prismatic-sunshine-fdcef5.netlify.app/user
+https://prismatic-sunshine-fdcef5.netlify.app
 
 ## Макет
 
