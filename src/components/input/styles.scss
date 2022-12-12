@@ -1,0 +1,57 @@
+.chat {
+  &__input-control {
+    display: block;
+    width: 100%;
+
+    box-sizing: border-box;
+    padding: 10px 5px;
+
+    border-radius: 8px;
+
+
+    &--main {
+      border-radius: 8px;
+      border: 2px solid var(--main-color);
+    }
+
+    &--secondary {
+      background-color: #EFEFEF;
+      border: none;
+      border-radius: 8px;
+
+      &:focus,
+      &:hover {
+        outline: 0;
+      }
+    }
+
+    &--borderless {
+      width: auto;
+      text-align: end;
+      border: none;
+
+      height: 9px;
+      
+      outline: 0;
+
+      &:focus,
+      &:hover {
+        outline: 0;
+        border: none;
+      }
+    }
+
+    &--error {
+      border-color: var(--error-color);
+
+      &:focus,
+      &:hover {
+        outline: 0;
+      }
+    }
+  }
+
+  &__input-text-error {
+    color: var(--error-color);
+  }
+}

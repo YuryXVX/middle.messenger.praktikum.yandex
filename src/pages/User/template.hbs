@@ -1,0 +1,34 @@
+<main class="content-center">
+  {{> back-to-button href="/"}}
+  <div class="user-page">
+    <div class="user-page__avatar">
+      {{>avatar src=avatar }}
+      <h3>{{screenName}}</h3>      
+    </div>
+
+    <div>
+      <ul class="user-page__list">       
+        {{> list-item key="Почта" value=email }}       
+        {{> list-item key="Логин" value=login }}      
+        {{> list-item key="Имя" value=firstName }}
+        {{> list-item key="Фамилия" value=lastName }}
+        {{> list-item key="Имя в чате" value=screenName }}
+        {{> list-item key="Телефон" value=phone }}
+      </ul>
+    </div>
+
+    <div class="user-page__footer">
+      <ul class="user-page__list">
+        <li>
+          {{> link content="Изменить данные" href="/user-settings"}}
+        </li>
+        <li>
+          {{> link content="Изменить пароль" href="/user-change-password" }}
+        </li>      
+        <li>
+          {{> link content="Выйти" }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,29 @@
+<main class="content-center">
+  {{> back-to-button href="/user"}}
+  <div class="user-page">
+    <div class="user-page__avatar">
+      {{>avatar src=avatar }}
+      <h3>{{screenName}}</h3>      
+    </div>
+
+    <div>
+      <ul class="user-page__list">    
+        <li>
+          <span>Старый пароль</span>
+          {{> input variant="borderless" value=password type="password"}}
+        </li> 
+        <li>
+          <span>Новый пароль</span>
+          {{> input variant="borderless" value=password type="password"}}
+        </li> 
+        <li>
+          <span>Повторите новый пароль</span>
+          {{> input variant="borderless" value=password type="password"}}
+        </li>   
+      </ul>
+    </div>
+
+    <div class="user-page__footer">
+      {{> button content="Сохранить" variant="main"}}
+  </div>
+</main>

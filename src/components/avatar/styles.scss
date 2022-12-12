@@ -1,0 +1,48 @@
+.avatar {
+  width: 130px;
+  height: 130px;
+  position: relative;
+
+  border-radius: 50%;
+
+  background-color: var(--separator-color);
+
+  background-position: center;
+  background-repeat: no-repeat;
+
+
+  & img {
+    width: inherit;
+    height: inherit;
+
+    border-radius: inherit;
+
+    object-fit: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    &::before {
+      position: absolute;
+      z-index: 10;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #fff;
+
+      content: 'Поменять аватар';
+
+      width: inherit;
+      height: inherit;
+
+
+      border-radius: inherit;
+
+      background-color: #000000;
+      opacity: .3;
+    }
+  }
+}

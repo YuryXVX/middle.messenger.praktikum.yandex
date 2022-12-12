@@ -1,0 +1,13 @@
+.link {
+  color: var(--main-color);
+  text-decoration: none;
+
+  &--block {
+    display: block;
+    text-align: center;
+  }
+
+  &:hover {
+    opacity: .8;
+  }
+}

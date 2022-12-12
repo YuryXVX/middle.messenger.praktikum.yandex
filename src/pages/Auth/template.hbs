@@ -1,0 +1,18 @@
+<main class="auth content-center app__page">
+  <form class="form auth__form">
+    <div class="form__wrap auth__from-wrap">
+      <legend class="auth__form-title form__title-legend">Вход</legend>
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Логин" name="login" variant="error" error="Не верный логин" }}
+      </fieldset>
+      <fieldset class="form__fieldset">
+        {{> input placeholder="Пароль" type="password" name="password" variant="main" }}
+      </fieldset>
+    </div>
+
+    <div class="form__buttons">
+      {{> button content="Авторизоваться" variant="main" }}
+      {{> link content="Нет аккаута?" href="/registration" variant="block" }}
+    </div>
+  </form>
+</main>

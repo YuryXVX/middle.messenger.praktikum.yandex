@@ -1,0 +1,41 @@
+<main class="content-center">
+  {{> back-to-button href="/user"}}
+  <div class="user-page">
+    <div class="user-page__avatar">
+      {{>avatar src=avatar }}
+      <h1></h1>
+    </div>
+    
+    <div>
+      <ul class="user-page__list"> 
+        <li>
+          <span>Почта</span>
+          {{> input variant="borderless" value=email type="emial"}}
+        </li> 
+        <li>
+          <span>Логин</span>
+          {{> input variant="borderless" value=login type="login"}}
+        </li> 
+        <li>
+          <span>Имя</span>
+          {{> input variant="borderless" value=firstName type="firstName"}}
+        </li>  
+        <li>
+          <span>Фамилия</span>
+          {{> input variant="borderless" value=lastName type="firstName"}}
+        </li>  
+        <li>
+          <span>Имя в чате</span>
+          {{> input variant="borderless" value=screenName type="firstName"}}
+        </li> 
+        <li>
+          <span>Телефон</span>
+          {{> input variant="borderless" value=phone type="firstName"}}
+        </li>       
+      </ul>
+    </div>
+
+    <div class="user-page__footer">
+      {{> button content="Сохранить" variant="main"}}
+  </div>
+</main>
