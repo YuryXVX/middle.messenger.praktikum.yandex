@@ -1,8 +1,18 @@
 import './styles.scss';
 import Block from '../../core/Block';
 
-export class Button extends Block {
-  constructor(props) {
+type ButtonProps = {
+  id: string;
+  disabled: boolean;
+  variant: string;
+  onClick: () => void;
+  events?: {
+    click: () => void;
+  }
+}
+
+export class Button extends Block<ButtonProps>{
+  constructor(props: ButtonProps) {
     super({
       ...props,
       disabled: props.disabled,
