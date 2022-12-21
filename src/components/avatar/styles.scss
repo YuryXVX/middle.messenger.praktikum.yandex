@@ -1,6 +1,7 @@
 .avatar {
-  width: 130px;
-  height: 130px;
+  --size: 130px;
+  width: var(--size);
+  height: var(--size);
   position: relative;
 
   border-radius: 50%;

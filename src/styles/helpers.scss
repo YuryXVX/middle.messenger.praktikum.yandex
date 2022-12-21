@@ -39,6 +39,8 @@
   }
 }
 
+
+
 .app__page {
   height: calc(100vh - var(--header-heigth));
 }
@@ -47,6 +49,14 @@ ul {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
 }
 
 .modal {

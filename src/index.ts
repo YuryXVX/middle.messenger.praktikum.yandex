@@ -1,17 +1,22 @@
-// import Router from './core/Router';
-// import { PAGES } from './pages';
-// import { registerComponent } from './utils/register-component';
-// import { ComponentsMap } from './components';
+import Router from './core/Router';
+import registerComponent from './core/registerComponent';
+import * as Components from './components';
+
+import { SCREENS } from './views';
 
 import './styles/index.scss';
 
-// registerComponent(ComponentsMap);
+
+Object.values(Components).forEach(Component => {
+  // @ts-ignore
+  registerComponent(Component);
+})
+
+
 
 const root = document.querySelector('#root') as HTMLElement;
 
-
-console.log(root)
-// Router
-//   .instance(PAGES, root)
-//   .listen();
+Router
+  .instance(SCREENS, root)
+  .listen();
 
