@@ -1,40 +1,86 @@
 import './styles.scss';
 import Block from '../../core/Block';
+import { InputControl } from './input-control';
+import { InputHint } from './input-hint';
+import registerComponent from '../../core/registerComponent';
+import { Validator } from '../../utils/form-validator';
 
-const defaultProps = {
-  events: {
-    input: () => {}
-  }
-}
+
+registerComponent(InputControl);
+registerComponent(InputHint);
+
 
 export class Input extends Block {
-  constructor(props = defaultProps) {
+  constructor(props) {
     super({
       ...props,
+      placeholder: props.placeholder || '',
       events: {
-        input: (evt) => {
-          if(this.props.onInput) {
-            this.props.onInput(evt);
-          }
-        }
-      }
+        input: (evt: InputEvent) => {
+          this.validate();
+          this.props.onInput && this.props.onInput(evt);
+        },
+        
+        focus: () => this.validate(),
+        blur: () => this.validate(),
+      },
+
+      errorMessage: '',
     })
   }
+
+  getInputValue(): string {
+    return this.getInputElement().value;
+  }
+
+  getInputElement(): HTMLInputElement {
+    return this.getContent().querySelector('input')!;
+  }
+
+  toggleStateInput(valid: boolean) {
+    if(!valid) {
+      this.getInputElement().style.borderColor = 'red'
+    } else {
+      this.getInputElement().style.borderColor = ''
+    }
+  }
+
+  validate = () => {
+    const { name, validate, noErrorMessage, error } = this.props;
+    const validator = Validator.rules(name);
+
+    const valid = validator(this.getInputValue());
+    const value = this.getInputValue();
+
+
+    if(validate && noErrorMessage) {
+      this.toggleStateInput(valid);
+    }
+
+    const errorMessage = !valid && !noErrorMessage
+      ? !value 
+        ? 'Поле не может быть пустым' : error 
+      : '';
+
+
+    validate && this.refs.hint.setProps({
+      errorMessage
+    })
+
+    this.props.onCheck && this.props.onCheck({ name, valid, value: this.getInputValue() })
+  }
+
 
   render() {
     return (
       `<div class="chat__input-wrap chat__input-wrap--error">
         <label class="visually-hidden" for="{{id}}">{{placeholder}}</label>
-        <input 
-          type="{{type}}" 
-          id="{{id}}"
-          name="{{name}}" 
-          placeholder="{{placeholder}}"
-          class="chat__input-control chat__input-control--{{variant}}"
-          value="{{value}}"
-        />
-
-        <span class="chat__input-text-error">{{error}}</span>
+        {{{ InputControl ref="input" events=events name='{{name}}' type="{{type}}" id="{{id}}" placeholder="{{placeholder}}" variant="{{variant}}" value=value }}}
+        <div>
+          {{#if validate}}
+          {{{ InputHint ref="hint" errorMessage="${this.props.errorMessage}" }}}
+          {{/if}}
+        </div>
       </div>
       `
     )
