@@ -2,8 +2,11 @@ import Block from '../../core/Block';
 
 import { USER_DATA_MOCK } from '../../constants';
 import { pick } from '../../utils/objects-utils';
+import { FormUiValidator } from '../../utils/form-validator';
 
 export default class ChangePasswordPage extends Block {
+  formValidator = new FormUiValidator() as FormUiValidator;
+
   constructor() {
     super({
       ...pick(USER_DATA_MOCK, ['password', 'avatar']),
@@ -14,6 +17,7 @@ export default class ChangePasswordPage extends Block {
           name: 'password',
           error: 'Мин. 8 - Макс. 40 символов, обязательно заглавная буква и цифра',
           validate: true,
+          formName: 'oldPassword'
         },
         { 
           placeholder: 'Новый Пароль',
@@ -21,9 +25,33 @@ export default class ChangePasswordPage extends Block {
           name: 'password',
           error: 'Мин. 8 - Макс. 40 символов, обязательно заглавная буква и цифра',
           validate: true,
+          formName: 'newPassword'
+        },
+        { 
+          placeholder: 'Повторите новый пароль',
+          type: 'password',
+          name: 'password',
+          error: 'Мин. 8 - Макс. 40 символов, обязательно заглавная буква и цифра',
+          validate: true,
+          formName: 'newPasswordRepeat'
         } 
       ],
+
+      onCheck: ({ name, valid, value, formName }) => this.formValidator.onCheck({ name, valid, value, formName }),
     })
+  }
+
+  componentDidMount() {
+    const form = this.element!.querySelector('form') as HTMLFormElement;
+    form.addEventListener('submit', this.onSubmit);
+  }
+
+  onSubmit = (evt) => {
+    evt.preventDefault();
+
+    if(this.formValidator.vaidateOnSubmit(this.refs)) {
+      console.log('[change-password]', this.formValidator.getFormData());
+    };
   }
 
   render() {
@@ -37,40 +65,22 @@ export default class ChangePasswordPage extends Block {
           <h3>{{screenName}}</h3>      
         </div>
 
-        <div>
-          <ul class="user-page__list"> 
+        <form>
+          <legend class="form__title-legend visually-hidden">Смена пароля</legend>
             ${
-              this.props.fields.map(({placeholder, validate, name,  error}, index) => {
+              this.props.fields.map(({placeholder, validate, name,  error, type, formName }, index) => {
                 return (
-                  `<li>
-                    <span>${placeholder}</span>
-                    {{{Input placeholder="${placeholder}" name="${name}" id="${index}" error="${error}" validate="${validate}" type="password"}}}
-                  </li>`
+                  `{{{Input id="${index}" placeholder="${placeholder}" ref="${formName}" type="${'text'}" error="${error}" validate="${validate}" name="${name}" formName="${formName}" variant="main" onCheck=onCheck }}}`
                 )
               })
               .join(' ')
             }
-          </ul>
-        </div>
 
         <div class="user-page__footer">
-          {{{Button content="Сохранить" variant="main"}}}
-      </div>
+          {{{ Button content="Сохранить" ref="button" variant="main" }}}
+        </div>
+      </form>
     </main>
     `)
   }
 }
-
-
-// <li>
-// <span>Старый пароль</span>
-// {{{Input variant="borderless" value="password" type="password"}}}
-// </li> 
-// <li>
-// <span>Новый пароль</span>
-// {{{Input variant="borderless" value="password" type="password"}}}
-// </li> 
-// <li>
-// <span>Повторите новый пароль</span>
-// {{{Input variant="borderless" value="password" type="password"}}}
-// </li> 

@@ -21,7 +21,7 @@ export const fields = [
     name: 'first_name',
     type: 'text',
     error: 'Имя должно начинаться с заглавной буквы',
-    formName: 'first_name',
+    formName: 'firstName',
   },
   {
     placeholder: 'Фамилия',
@@ -29,7 +29,15 @@ export const fields = [
     name: 'second_name',
     type: 'text',
     error: 'Фамилия должна начинаться с заглавной буквы',
-    formName: 'second_name',
+    formName: 'secondName',
+  },
+  {
+    placeholder: 'Имя в чате',
+    validate: true,
+    name: 'сhat_name',
+    type: 'text',
+    error: 'Не может быть пустым',
+    formName: 'chatName',
   },
   {
     placeholder: 'Телефон',
@@ -38,21 +46,5 @@ export const fields = [
     type: 'phone',
     error: 'Телефон может начинаться с +7',
     formName: 'phone',
-  },
-  { 
-    placeholder: 'Пароль',
-    type: 'password',
-    name: 'password',
-    error: 'Мин. 8 - Макс. 40 символов, обязательно заглавная буква и цифра',
-    validate: true,
-    formName: 'password',
-  },
-  { 
-    placeholder: 'Пароль (еще раз)',
-    type: 'password',
-    name: 'password',
-    error: 'Мин. 8 - Макс. 40 символов, обязательно заглавная буква и цифра',
-    validate: true,
-    formName: 'repeatPassword',
   }
 ];

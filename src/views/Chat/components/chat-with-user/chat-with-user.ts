@@ -2,15 +2,10 @@ import { CHAT_WITH_MOCK_USER } from "../../../../constants";
 import Block from "../../../../core/Block";
 import { Message } from "../../../../models/message";
 import { User } from "../../../../models/user";
+import { chatService } from "../../../../services/ChatService";
 import { ChatMessageBlock } from "./chat-message-block";
 
 import './styles.scss';
-
-function wait(timer: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, timer)
-  })
-}
 
 type ChatWithUserViewProps = {
   user: User;
@@ -30,15 +25,11 @@ export class ChatWithUserView extends Block<ChatWithUserViewProps>{
   }
 
   componentDidMount(): void {
-    // псоле интеграции с беком нужно вынести в отдельный сервис
-    wait(60)
-      .then(() => {
-        const messages = CHAT_WITH_MOCK_USER[this.props.user.id];
-
+    chatService.getMessagesById(this.props.user.id)
+      .then(messages => {
         this.setState({
           messages
         })
-      
       })
       .finally(() => {
         this.setState({ loaded: false })
@@ -46,7 +37,7 @@ export class ChatWithUserView extends Block<ChatWithUserViewProps>{
   }
 
   onSubmitMessage(message: string) {
-    console.log('[submit]', {title: message});
+    chatService.send({ message });
   }
 
   _renderChat() {
@@ -60,7 +51,7 @@ export class ChatWithUserView extends Block<ChatWithUserViewProps>{
 
 
   render() {
-    const { user, loaded } = this.state;
+    const { loaded } = this.state;
 
     return (`
       <div class="chat-messages__block"> 

@@ -13,6 +13,7 @@ export class InputControl extends Block {
           type="{{type}}" 
           id="{{id}}"
           name="{{name}}" 
+          data-error="{{error}}"
           placeholder="{{placeholder}}"
           class="chat__input-control chat__input-control--{{variant}}"
           value="{{value}}"

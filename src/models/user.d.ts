@@ -8,4 +8,5 @@ export type User = {
   phone: string;
   avatar: string;
   role: string;
+  password: string;
 }

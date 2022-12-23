@@ -1,64 +1,39 @@
 import './styles.scss';
 import Block from '../../core/Block';
-import { DomUtils } from '../../utils/dom';
 import { fields } from './utils/form-config';
+import { FormUiValidator } from '../../utils/form-validator';
+import { authService } from '../../services/AuthSerive';
+import { User } from '../../models/user';
 
 
 type AuthPageState = {
-  fields: FieldControl[];
-  onCheck: (args: { name: string, value: string; valid: boolean }) => void;
+  fields: any[];
+  onCheck: FormUiValidator['onCheck'];
 }
 
 export default class AuthPage extends Block<AuthPageState> {
-  controlsValid: Record<string, {
-    valid: boolean;
-    value: string;
-  }>;
-
+  formValudator = new FormUiValidator() as FormUiValidator;
   constructor() {
     super({
       fields,
-      onCheck: ({ name, valid, value }) => this.onCheck({ name, valid, value }),
+      onCheck: ({ formName, valid, value, name }) => this.formValudator.onCheck({ name, formName, valid, value }),
     })
-
-    this.controlsValid = {}
   }
 
   componentDidMount(): void {
     const form = this.element!.querySelector('form') as HTMLFormElement;
-
     form.addEventListener('submit', this.onSubmit)
   }
 
-  onCheck =({ name, valid, value }: { name: string; valid: boolean, value: string }) => {
-    this.controlsValid[name] = { value, valid };
-
-    this.updateDisabledStateButton();
-  }
-
-  updateDisabledStateButton() {
-    const isValid = Object.values(this.controlsValid).every(({ valid }) => valid);
-
-    if(isValid) {
-      DomUtils.removeAttribute(this.refs.button.getContent(), 'disabled');
-    } else {
-      DomUtils.setAttribute(this.refs.button.getContent(), 'disabled', 'true');
-    }
-  }
 
   onSubmit = (evt) => {
     evt.preventDefault();
 
-    console.log('[auth]', this.getFormData());
+    if(this.formValudator.vaidateOnSubmit(this.refs)) {
+      authService.signUp(this.formValudator.getFormData() as Pick<User, 'login' | 'password'>);
+    }
   }
 
-  getFormData() {
-    return Object.keys(this.controlsValid)
-      .reduce((payload, key) => ({...payload, [key]: this.controlsValid[key].value }), {
-        login: '',
-        password: '',
-      })
-  }
 
   render() {
     return (
@@ -66,18 +41,15 @@ export default class AuthPage extends Block<AuthPageState> {
         <form class="form auth__form">
           <div class="form__wrap auth__from-wrap">
             <legend class="auth__form-title form__title-legend">Вход</legend>
-
             ${
-              this.props.fields.map(({placeholder, name, validate, error, type}, index) => {
-                return (`
-                  <fieldset class="form__fieldset">
-                    {{{Input id="${index}" placeholder="${placeholder}" ref="${name}" type="${type}" error="${error}" validate="${validate}" name="${name}" variant="main" onCheck=onCheck }}}
-                  </fieldset>`
+              this.props.fields.map(
+                (
+                  {placeholder, name, formName, validate, error, type}, index) => (
+                  `{{{Input id="${index}" placeholder="${placeholder}" ref="${formName}" formName="${formName}" type="${type}" error="${error}" validate="${validate}" name="${name}" variant="main" onCheck=onCheck }}}`
                 )
-              })
+              )
               .join(' ')
             }
- 
           </div>
       
           <div class="form__buttons">

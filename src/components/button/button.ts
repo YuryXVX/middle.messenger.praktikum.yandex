@@ -15,12 +15,17 @@ export class Button extends Block<ButtonProps>{
   constructor(props: ButtonProps) {
     super({
       ...props,
-      disabled: props.disabled,
       variant: props.variant || 'main',
       events: {
         click: props.onClick
       }
     })
+  }
+
+  componentDidMount() {
+    if(!this.props.disabled) {
+      this.getContent().removeAttribute('disabled');
+    }
   }
 
   render() {

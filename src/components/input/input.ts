@@ -46,7 +46,7 @@ export class Input extends Block {
   }
 
   validate = () => {
-    const { name, validate, noErrorMessage, error } = this.props;
+    const { name, validate, noErrorMessage, error, formName } = this.props;
     const validator = Validator.rules(name);
 
     const valid = validator(this.getInputValue());
@@ -58,8 +58,7 @@ export class Input extends Block {
     }
 
     const errorMessage = !valid && !noErrorMessage
-      ? !value 
-        ? 'Поле не может быть пустым' : error 
+      ? error 
       : '';
 
 
@@ -67,21 +66,25 @@ export class Input extends Block {
       errorMessage
     })
 
-    this.props.onCheck && this.props.onCheck({ name, valid, value: this.getInputValue() })
+    this.props.onCheck && this.props.onCheck({
+       name, valid, value: this.getInputValue(), ...(formName && { formName }) 
+    });
   }
 
 
   render() {
     return (
-      `<div class="chat__input-wrap chat__input-wrap--error">
-        <label class="visually-hidden" for="{{id}}">{{placeholder}}</label>
-        {{{ InputControl ref="input" events=events name='{{name}}' type="{{type}}" id="{{id}}" placeholder="{{placeholder}}" variant="{{variant}}" value=value }}}
-        <div>
-          {{#if validate}}
-          {{{ InputHint ref="hint" errorMessage="${this.props.errorMessage}" }}}
-          {{/if}}
+      `<fieldset class="form__fieldset">
+        <div class="chat__input-wrap chat__input-wrap--error">
+          <label class="visually-hidden" for="{{id}}">{{placeholder}}</label>
+          {{{ InputControl error="{{error}}" ref="input" events=events name='{{name}}' type="{{type}}" id="{{id}}" placeholder="{{placeholder}}" variant="{{variant}}" value=value }}}
+          <div>
+            {{#if validate}}
+            {{{ InputHint ref="hint" errorMessage="${this.props.errorMessage}" }}}
+            {{/if}}
+          </div>
         </div>
-      </div>
+      </fieldset>
       `
     )
   }

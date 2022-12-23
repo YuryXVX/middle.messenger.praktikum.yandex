@@ -2,11 +2,33 @@ import Block from '../../core/Block';
 
 import { USER_DATA_MOCK } from '../../constants';
 import { omit } from '../../utils/objects-utils';
+import { fields } from './utils/form-config';
+import { FormUiValidator } from '../../utils/form-validator';
 
 export default class UserSettingsPage extends Block {
+  formValidator = new FormUiValidator() as FormUiValidator;
+
   constructor() {
-    super(omit(USER_DATA_MOCK, ['password']))
+    super({
+      ...omit(USER_DATA_MOCK, ['password']),
+      fields,
+      onCheck: ({ valid, value, formName, name }) => this.formValidator.onCheck({ name, valid, value, formName }),
+    })
   }
+
+  componentDidMount(): void {
+    const form = this.element!.querySelector('form') as HTMLFormElement;
+    form.addEventListener('submit', this.onSubmit);
+  }
+
+  onSubmit = (evt) => {
+    evt.preventDefault();
+
+    if(this.formValidator.vaidateOnSubmit(this.refs)) {
+      console.log('[settings-user]', this.formValidator.getFormData());
+    }
+  }
+ 
   render() {
     return (      
       `<main class="content-center">
@@ -17,37 +39,22 @@ export default class UserSettingsPage extends Block {
             <h1></h1>
           </div>
           
-          <div>
+          <form>
             <ul class="user-page__list"> 
-              <li>
-                <span>Почта</span>
-                {{{Input variant="borderless" value=email type="emial"}}}
-              </li> 
-              <li>
-                <span>Логин</span>
-                {{{Input variant="borderless" value=login type="login"}}}
-              </li> 
-              <li>
-                <span>Имя</span>
-                {{{Input variant="borderless" value=firstName type="firstName"}}}
-              </li>  
-              <li>
-                <span>Фамилия</span>
-                {{{Input variant="borderless" value=lastName type="firstName"}}}
-              </li>  
-              <li>
-                <span>Имя в чате</span>
-                {{{Input variant="borderless" value=screenName type="firstName"}}}
-              </li> 
-              <li>
-                <span>Телефон</span>
-                {{{Input variant="borderless" value=phone type="firstName"}}}
-              </li>       
-            </ul>
-          </div>
-      
-          <div class="user-page__footer">
-            {{{Button content="Сохранить" variant="main"}}}
+            ${
+              this.props.fields.map(
+                ({placeholder, formName, name, validate, type, error}, i) => (
+                  `{{{Input id="${i}" placeholder="${placeholder}" formName="${formName}" ref="${formName}" type="${type}" error="${error}" validate="${validate}" name="${name}" variant="main" onCheck=onCheck }}}`
+                )
+              )
+              .join(' ')
+            }
+
+            <div class="user-page__footer">
+              {{{Button content="Сохранить" variant="main"}}}
+            </div>
+          </form>
+  
         </div>
       </main>
     

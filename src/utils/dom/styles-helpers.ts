@@ -14,4 +14,3 @@ export const toggleClasses = (ref: HTMLElement, className: string): cleanup => {
     current = null;
   }
 }
-

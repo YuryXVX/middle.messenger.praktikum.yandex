@@ -1,25 +1,22 @@
 import Block from '../../core/Block';
-import { DomUtils } from '../../utils/dom';
+import { User } from '../../models/user';
+import { authService } from '../../services/AuthSerive';
+import { FormUiValidator } from '../../utils/form-validator';
 import { fields } from './utils/form-config';
 
 type RegistrationPageState = {
-  fields: FieldControl[];
-  onCheck: (args: { name: string, valid: boolean, value: string }) => void;
+  fields: any[];
+  onCheck: (args: { formName: string, name: string; valid: boolean, value: string }) => void;
 }
 
 export default class RegistrationPage extends Block<RegistrationPageState>{
-  controlsValid: Record<string, {
-    valid: boolean;
-    value: string;
-  }>;
+  formValidator = new FormUiValidator();
 
   constructor() {
     super({
       fields,
-      onCheck: ({ name, valid, value }) => this.onCheck({ name, valid, value }),
+      onCheck: ({ formName, valid, value, name }) => this.formValidator.onCheck({ name, formName, valid, value }),
     })
-
-    this.controlsValid = {};
   }
 
   componentDidMount(): void {
@@ -30,31 +27,9 @@ export default class RegistrationPage extends Block<RegistrationPageState>{
   onSubmit = (evt) => {
     evt.preventDefault();
 
-    console.log('[autorize]', this.getFormData());
-  }
-
-  getFormData() {
-    return Object.keys(this.controlsValid)
-      .reduce((payload, key) => ({...payload, [key]: this.controlsValid[key].value }), {
-        login: '',
-        password: '',
-      })
-  }
-
-  updateDisabledStateButton() {
-    const isValid = Object.values(this.controlsValid).every(({ valid }) => valid);
-
-    if(isValid) {
-      DomUtils.removeAttribute(this.refs.button.getContent(), 'disabled');
-    } else {
-      DomUtils.setAttribute(this.refs.button.getContent(), 'disabled', 'true');
+    if(this.formValidator.vaidateOnSubmit(this.refs)) {
+      authService.signUp(this.formValidator.getFormData() as User);
     }
-  }
-
-  onCheck =({ name, valid, value }: { name: string; valid: boolean, value: string }): void => {
-    this.controlsValid[name] = { value, valid };
-
-    this.updateDisabledStateButton();
   }
 
   render() {
@@ -64,18 +39,17 @@ export default class RegistrationPage extends Block<RegistrationPageState>{
           <div class="form__wrap">
             <legend class="form__title-legend">Регистрация</legend>
             ${
-              this.props.fields.map(({placeholder, name, validate, type, error}, i) => {
+              this.props.fields.map(({placeholder, formName, name, validate, type, error}, i) => {
                 return (`
-                  <fieldset class="form__fieldset">
-                    {{{Input id="${i}" placeholder="${placeholder}" ref="${name}" type="${type}" error="${error}" validate="${validate}" name="${name}" variant="main" onCheck=onCheck }}}
-                  </fieldset>`
+                    {{{Input id="${i}" placeholder="${placeholder}" formName="${formName}" ref="${formName}" type="${type}" error="${error}" validate="${validate}" name="${name}" variant="main" onCheck=onCheck }}}
+                  `
                 )
               })
               .join(' ')
             }
 
             <div class="form__buttons">
-              {{{Button ref="button" disabled="false" content="Зарегистрироваться" variant="main"}}}
+              {{{Button ref="button" content="Зарегистрироваться" variant="main"}}}
               {{{Link content="Войти" href="/" variant="block"}}}
             </div>
           </div>
