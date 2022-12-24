@@ -6,14 +6,8 @@ import NotFoundPage from './NotFound';
 import RegistrationPage from './Registration';
 import UserPage from './User';
 import UserSettingsPage from './UserSettings';
-import Block from '../core/Block';
 
-type Path = string;
-type Screen = typeof Block;
-
-type ScreenMap = { [key: Path]: Screen }
-
-export const SCREENS: ScreenMap = {
+export const SCREENS = {
   '/': ChatPage,
   '/auth': AuthPage,
   '/not-found': NotFoundPage,

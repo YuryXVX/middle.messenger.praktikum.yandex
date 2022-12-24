@@ -1,4 +1,4 @@
-import { User } from "./user"
+import { User } from './user';
 
 export type Message = {
   id: number;
@@ -6,8 +6,8 @@ export type Message = {
   avatar: string;
   unread_count: number;
   last_message: {
-    user: User,
+    user: Omit<User, 'password'>,
     time: string,
     content: string;
   }
-}
+};

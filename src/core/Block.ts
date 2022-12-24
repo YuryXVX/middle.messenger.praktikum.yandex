@@ -1,5 +1,5 @@
 import EventBus from './EventBus';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 import Handlebars from 'handlebars';
 import registerComponent from './registerComponent';
 
@@ -18,17 +18,22 @@ export default class Block<P extends object = any> {
   } as const;
 
   public id = nanoid(6);
+
   private readonly _meta: BlockMeta;
 
   protected _element: Nullable<HTMLElement> = null;
+
   protected readonly props: P;
-  protected children: {[id: string]: Block} = {};
+
+  protected children: { [id: string]: Block } = {};
+
   protected componentName = '' as string;
 
   eventBus: () => EventBus<Events>;
 
   protected state: any = {};
-  public refs: {[key: string]: Block } = {};
+
+  public refs: { [key: string]: Block } = {};
 
   public constructor(props?: P) {
     const eventBus = new EventBus<Events>();
@@ -37,7 +42,7 @@ export default class Block<P extends object = any> {
       props,
     };
 
-    this.getStateFromProps(props)
+    this.getStateFromProps(props);
 
     this.props = this._makePropsProxy(props || {} as P);
     this.state = this._makePropsProxy(this.state);
@@ -113,29 +118,24 @@ export default class Block<P extends object = any> {
     return this._element;
   }
 
-  emit(event: string, agrs) {
-    this._element.dispatchEvent(new CustomEvent(event, {
-      detail: agrs,
-      bubbles: true,
-    }));
-  }
-
   _render() {
     const fragment = this._compile();
 
     this._removeEvents();
-    const newElement = fragment.firstElementChild!;
+    const newElement = fragment.firstElementChild! as HTMLElement;
 
     this._element!.replaceWith(newElement);
 
-    this._element = newElement;
+    // @ts-ignore
+    this._element = newElement as NonNullable<Element>;
+    
 
     this._addEvents();
   }
 
   protected render(): string {
     return '';
-  };
+  }
 
   getContent(): HTMLElement {
     // Хак, чтобы вызвать CDM только после добавления в DOM
@@ -144,7 +144,7 @@ export default class Block<P extends object = any> {
         if (this.element?.parentNode?.nodeType !==  Node.DOCUMENT_FRAGMENT_NODE ) {
           this.eventBus().emit(Block.EVENTS.FLOW_CDM);
         }
-      }, 100)
+      }, 100);
     }
 
     return this.element!;
@@ -165,7 +165,7 @@ export default class Block<P extends object = any> {
 
         // Запускаем обновление компоненты
         // Плохой cloneDeep, в след итерации нужно заставлять добавлять cloneDeep им самим
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, {...target}, target);
+        self.eventBus().emit(Block.EVENTS.FLOW_CDU, { ...target }, target);
         return true;
       },
       deleteProperty() {
@@ -261,15 +261,16 @@ export default class Block<P extends object = any> {
   }
 
   componentWillUnmount() {}
+
   componentWillDestoy() {}
 
   destroy() {
     this.componentWillUnmount();
 
-    if(this.children) {
+    if (this.children) {
       Object.values(this.children).forEach((child) => {
         child.componentWillUnmount();
-      })
+      });
     }
 
     this._removeEvents();
@@ -280,16 +281,12 @@ export default class Block<P extends object = any> {
 
     this.componentWillDestoy();
 
-    if(this.children) {
+    if (this.children) {
       Object.values(this.children).forEach((child) => {
         child.componentWillDestoy();
-      })
+      });
     }
 
     this.children = {};
-  }
-
-  registerComponent(Component: typeof Block) {
-    registerComponent(Component);
   }
 }

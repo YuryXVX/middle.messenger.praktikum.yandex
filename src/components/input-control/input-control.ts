@@ -1,10 +1,7 @@
-import Block from "../../core/Block";
+import Block from '../../core/Block';
 
 export class InputControl extends Block {
-  protected componentName = 'input';
-  constructor(props) {
-    super(props)
-  }
+  protected componentName = 'InputControl';
 
   render() {
     return (`
@@ -18,6 +15,6 @@ export class InputControl extends Block {
           class="chat__input-control chat__input-control--{{variant}}"
           value="{{value}}"
         />
-    `)
+    `);
   }
 }

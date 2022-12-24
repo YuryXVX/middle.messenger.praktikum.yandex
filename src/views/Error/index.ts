@@ -1,6 +1,8 @@
 import Block from '../../core/Block';
 
 export default class ErrorPage extends Block {
+  protected componentName = 'ErrorPage';
+
   render() {
     return (`
       <main class="app__page content-center not-found">
@@ -10,6 +12,6 @@ export default class ErrorPage extends Block {
           {{{Link content="Назад к чатам" href="/"}}}
         </div>
       </main>
-    `)
+    `);
   }
 }

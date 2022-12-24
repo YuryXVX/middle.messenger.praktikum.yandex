@@ -8,16 +8,18 @@ type AvatarProps = {
   events?: {
     click: AvatarProps['onClick'];
   }
-}
+};
 
 export class Avatar extends Block<AvatarProps> {
+  protected componentName = 'Avatar';
+
   constructor(props: AvatarProps) {
     super({
       ...props,
       events: {
-        click: props.onClick
-      }
-    })
+        click: props.onClick,
+      },
+    });
   }
 
   render() {
@@ -33,6 +35,6 @@ export class Avatar extends Block<AvatarProps> {
           alt="аватар пользователя"
         />
       </div>
-    `)
+    `);
   }
 }

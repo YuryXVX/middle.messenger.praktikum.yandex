@@ -1,9 +1,7 @@
-export type cleanup = () => void;
-
 let current = null as null | HTMLElement;
 
-export const toggleClasses = (ref: HTMLElement, className: string): cleanup => {
-  if(current) {
+export const toggleClasses = (ref: HTMLElement, className: string): () => void => {
+  if (current) {
     current.classList.remove(className);
   }
 
@@ -12,5 +10,5 @@ export const toggleClasses = (ref: HTMLElement, className: string): cleanup => {
 
   return function cleanup() {
     current = null;
-  }
-}
+  };
+};

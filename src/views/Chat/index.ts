@@ -8,12 +8,15 @@ import { ChatWithUserView } from './components';
 import './styles.scss';
 
 type ChatPageProps = {
-  data: User[];
+  data: Omit<User, 'password'>[];
   onSelect: (user: User) => void;
-}
+};
 
 export default class ChatPage extends Block<ChatPageProps> {
+  protected componentName = 'ChatPage';
+
   cleanup: (() => void) | null;
+
   currentUserId: null | User['id'];
 
   observer: ReturnType<typeof Observer>;
@@ -22,7 +25,7 @@ export default class ChatPage extends Block<ChatPageProps> {
     super({
       data: USERS_CHAT_MOCK,
       onSelect: (user: User) => this.onSelect(user),
-    })
+    });
 
     this.cleanup = null;
     this.currentUserId = null;
@@ -31,51 +34,49 @@ export default class ChatPage extends Block<ChatPageProps> {
 
     const { sub } = this.observer;
    
-    sub(this._getChatListWithSelectedUser.bind(this))
+    sub(this.getChatListWithSelectedUser.bind<() => string>(this));
   }
 
   onSelect = (user: User) => {
-    if(this.currentUserId === user.id) {
+    if (this.currentUserId === user.id) {
       return;
     }
 
     this.cleanup = DomUtils.toggleClasses(this.refs[user.id].getContent(), 'user-chat__item--active');
     this.currentUserId = user.id;
 
-    this.observer.pub(() => this._renderChatWithUserComponent(user));
-  }
-
-  _renderChatWithUserComponent(user: User) {
-    const chat = new ChatWithUserView({ user });
-    DomUtils.replceChildNodes(this.element.querySelector('#chat'), chat.getContent());
-  }
+    this.observer.pub(() => this.renderChatWithUserComponent(user));
+  };
 
   componentWillUnmount(): void {
     this.cleanup = null;
     this.observer.cleanup();
   }
 
-  _getUserMessagesList() {
+  private renderChatWithUserComponent(user: User): void {
+    const chat = new ChatWithUserView({ user });
+    DomUtils.replceChildNodes(this.element!.querySelector('#chat')!, chat.getContent());
+  }
+
+  private getUserMessagesList() {
     return this.props.data.map(
       user => (
         `{{{  Message user='${JSON.stringify(user)}' ref="${user.id}" onSelect=onSelect }}}`
-      )
+      ),
     )
-    .join('');
+      .join('');
   }
   
-  _getChatListWithSelectedUser(templator?: () => string) {
-    if(!templator) {
-      return (
-        `<div class="messages--empty">
-          Выберите чат чтобы отправить сообщение
-        </div>`
-      );
-    }
-
-    if(templator && typeof templator === 'function') {
+  private getChatListWithSelectedUser(templator?: () => string)  {
+    if (templator && typeof templator === 'function') {
       return templator();
     }
+    
+    return (
+      `<div class="messages--empty">
+        Выберите чат чтобы отправить сообщение
+      </div>`
+    );
   }
 
   render() {
@@ -92,12 +93,12 @@ export default class ChatPage extends Block<ChatPageProps> {
           </div>
 
           <div class="chat-list__users">
-            ${ this._getUserMessagesList() }
+            ${ this.getUserMessagesList() }
           </div>
         </div>
       
         <div class="chat__messages-list messages" id="chat">
-          ${ this._getChatListWithSelectedUser() }
+          ${ this.getChatListWithSelectedUser() }
         </div>
       </main>
       `

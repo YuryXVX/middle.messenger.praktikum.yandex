@@ -1,14 +1,16 @@
-import Block from "./Block";
+import Block from './Block';
 
 // минорная версия роутера - захардкожены элементы навигации в html вместо компонента <Link />
 export default class Router {
-  routes: Record<string, typeof Block>
+  routes: Record<string, typeof Block>;
+
   root: HTMLElement;
+
   page: Block | null;
 
   static _instance: Router | null;
 
-  constructor(routes: Record<string, typeof Block>, root: HTMLElement) {
+  constructor(routes: Record<string, any>, root: HTMLElement) {
     this.routes = routes;
     this.root = root;
     this.page = null;
@@ -16,14 +18,14 @@ export default class Router {
     this.initListeners();
   }
 
-  static instance(routes: Record<string, typeof Block>, root: HTMLElement) {
+  static instance(routes: Record<string, any>, root: HTMLElement) {
     if (!this._instance) {
       this._instance = new Router(routes, root);
     }
     return this._instance;
   }
 
-  handleClickLink(href) {
+  handleClickLink(href: string) {
     const { pathname } = new URL(href);
     this.navigate(pathname);
   }
@@ -34,12 +36,12 @@ export default class Router {
       const targetElement = evt.target as Element;
       const link = targetElement.closest('[data-nav]') as HTMLLinkElement;
 
-      if(link) {
+      if (link) {
         evt.preventDefault();
         const { href } = link;
         this.handleClickLink(href);
       }
-    })
+    });
   }
 
   async route() {
@@ -50,7 +52,7 @@ export default class Router {
     for (const [path, page] of Object.entries(this.routes)) {
       match = pathname === path;
 
-      if(match) {
+      if (match) {
         this.changePage(page);
         break;
       }
@@ -76,7 +78,7 @@ export default class Router {
     this.root.append(this.page!.getContent());
   }
 
-  navigate(path) {
+  navigate(path: string) {
     history.pushState(null, 'null', path);
     this.route();
   }

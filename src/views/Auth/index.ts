@@ -1,39 +1,65 @@
-import './styles.scss';
 import Block from '../../core/Block';
 import { fields } from './utils/form-config';
 import { FormUiValidator } from '../../utils/form-validator';
 import { authService } from '../../services/AuthSerive';
 import { User } from '../../models/user';
 
+import './styles.scss';
 
 type AuthPageState = {
-  fields: any[];
+  fields: FieldControl[];
   onCheck: FormUiValidator['onCheck'];
-}
+};
 
 export default class AuthPage extends Block<AuthPageState> {
+  protected componentName = 'AuthPage';
+ 
   formValudator = new FormUiValidator() as FormUiValidator;
+
   constructor() {
     super({
       fields,
-      onCheck: ({ formName, valid, value, name }) => this.formValudator.onCheck({ name, formName, valid, value }),
-    })
+      onCheck: ({ formName, valid, value, name }) => (
+        this.formValudator.onCheck({ 
+          name, formName, valid, value, 
+        })
+      ),
+    });
   }
 
   componentDidMount(): void {
     const form = this.element!.querySelector('form') as HTMLFormElement;
-    form.addEventListener('submit', this.onSubmit)
+    form.addEventListener('submit', this.onSubmit);
   }
 
 
-  onSubmit = (evt) => {
+  onSubmit = (evt: SubmitEvent) => {
     evt.preventDefault();
 
-    if(this.formValudator.vaidateOnSubmit(this.refs)) {
+    if (this.formValudator.vaidateOnSubmit(this.refs)) {
       authService.signUp(this.formValudator.getFormData() as Pick<User, 'login' | 'password'>);
     }
-  }
+  };
 
+  renderControls() {
+    return this.props.fields.map(
+      ({ placeholder, name, formName, validate, error, type }, index) => (
+        `{{{Input 
+          id="${index}" 
+          placeholder="${placeholder}" 
+          ref="${formName}" 
+          formName="${formName}" 
+          type="${type}" 
+          error="${error}" 
+          validate="${validate}" 
+          name="${name}" 
+          variant="main" 
+          onCheck=onCheck 
+        }}}`
+      ),
+    )
+      .join(' ');
+  }
 
   render() {
     return (
@@ -41,15 +67,7 @@ export default class AuthPage extends Block<AuthPageState> {
         <form class="form auth__form">
           <div class="form__wrap auth__from-wrap">
             <legend class="auth__form-title form__title-legend">Вход</legend>
-            ${
-              this.props.fields.map(
-                (
-                  {placeholder, name, formName, validate, error, type}, index) => (
-                  `{{{Input id="${index}" placeholder="${placeholder}" ref="${formName}" formName="${formName}" type="${type}" error="${error}" validate="${validate}" name="${name}" variant="main" onCheck=onCheck }}}`
-                )
-              )
-              .join(' ')
-            }
+            ${ this.renderControls() }
           </div>
       
           <div class="form__buttons">
@@ -58,7 +76,7 @@ export default class AuthPage extends Block<AuthPageState> {
           </div>
         </form>
       </main>`    
-    )
+    );
   }
 }
 

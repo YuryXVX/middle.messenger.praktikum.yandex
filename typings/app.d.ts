@@ -12,6 +12,7 @@ declare global {
     name: string;
     error: string;
     validate: boolean;
+    formName: string;
   };
 }
 

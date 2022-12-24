@@ -14,5 +14,5 @@ export const fields = [
     error: 'Мин. 8 - Макс. 40 символов, обязательно заглавная буква и цифра',
     validate: true,
     formName: 'password',
-  }
-]
+  },
+];

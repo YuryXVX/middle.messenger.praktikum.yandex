@@ -1,7 +1,11 @@
 import './styles.scss';
 import Block from '../../core/Block';
 
+// TODO необходимо сделать комонент potal и modal
+
 export class AvatarEdit extends Block {
+  protected componentName = 'AvatarEdit';
+
   render() {
     return (`
       <div tabindex="-1">
@@ -24,8 +28,6 @@ export class AvatarEdit extends Block {
           </div>
         </div>
       </div>
-    `)
+    `);
   }
 }
-
-// TODO необходимо сделать комонент potal и modal

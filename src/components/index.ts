@@ -8,3 +8,5 @@ export { default as ListItem } from './list-item';
 export { default as Message } from './message';
 export { default as ChatItem } from './chat-item';
 export { default as Spinner } from './spinner';
+export { default as InputControl } from './input-control';
+export { default as InputHint } from './input-hint';

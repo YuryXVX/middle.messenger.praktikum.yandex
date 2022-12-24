@@ -46,5 +46,5 @@ export const fields = [
     type: 'phone',
     error: 'Телефон может начинаться с +7',
     formName: 'phone',
-  }
+  },
 ];

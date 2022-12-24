@@ -3,6 +3,8 @@ import Block from '../../core/Block';
 import './styles.scss';
 
 export default class NotFoundPage extends Block {
+  protected componentName = 'NotFoundPage';
+ 
   render() {
     return (
       `<main class="app__page content-center not-found">
@@ -13,6 +15,6 @@ export default class NotFoundPage extends Block {
         </div>
       </main>
       `
-    )
+    );
   }
 }

@@ -9,4 +9,4 @@ export type User = {
   avatar: string;
   role: string;
   password: string;
-}
+};

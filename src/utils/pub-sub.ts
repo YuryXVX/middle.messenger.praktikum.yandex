@@ -2,13 +2,13 @@ export function Observer<T extends <U>(args: U) => void>() {
   let listeners = [] as T[];
 
   function sub(cb: T) {
-    listeners.push(cb)
+    listeners.push(cb);
   }
 
   function pub<U>(agrs: U) {
     listeners.forEach(
-      cb => cb(agrs)
-    )
+      cb => cb(agrs),
+    );
   }
 
   function cleanup() {
@@ -16,6 +16,6 @@ export function Observer<T extends <U>(args: U) => void>() {
   }
 
   return {
-    sub, pub, cleanup
-  }
+    sub, pub, cleanup,
+  };
 }

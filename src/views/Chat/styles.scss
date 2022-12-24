@@ -39,17 +39,28 @@
 }
 
 .chat-list {
-  overflow: scroll;
+  --header-users-list: 108px;
+  --main-header: 45px;
+
 
   &__header-wrap {
     display: flex;
     flex-direction: column;
+
+    background-color: var(--secondary-color);
     padding: 10px;
+
+    border-bottom: 1px solid var(--separator-color);
   }
 
   &__header-link {
     margin-bottom: 12px;
     align-self: end;
+  }
+
+  &__users {
+    overflow: scroll;
+    height: calc(100vh - (var(--header-users-list) + var(--main-header)));
   }
 }
 

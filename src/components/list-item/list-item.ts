@@ -1,15 +1,8 @@
 import Block from '../../core/Block';
-import './styles.scss'
+import './styles.scss';
 
-type ListItemProps = {
-  key: string;
-  value: string;
-}
-
-export  class ListItem extends Block {
-  constructor(props: ListItemProps) {
-    super(props)
-  }
+export class ListItem extends Block {
+  protected componentName = 'ListItem';
 
   render() {
     return (
@@ -17,6 +10,6 @@ export  class ListItem extends Block {
         <span>{{key}}</span>
         <span>{{value}}</span>
       </li>
-    `)
+    `);
   }
 }

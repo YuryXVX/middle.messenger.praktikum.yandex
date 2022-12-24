@@ -1,12 +1,12 @@
-import Block from "../../core/Block";
+import Block from '../../core/Block';
 
 export class Validator {
-  static REG_EXP_FOR_NAME_AND_SURNAME = /^[A-Z]|[А-Я][A-Za-zА-Яа-я]+$/u
+  static REG_EXP_FOR_NAME_AND_SURNAME = /^[A-Z]|[А-Я][A-Za-zА-Яа-я]+$/u;
 
   static rules = (rule: string): (value: string) => boolean => {
     const rules = {
       login: (value: string) => {
-        if(value.length === 20) return isNaN(Number(value));
+        if (value.length === 20) return isNaN(Number(value));
 
         return /^[0-9a-zA-Z._]{3,20}$/.test(value);
       },
@@ -17,27 +17,27 @@ export class Validator {
       ['first_name']: (value: string) => Validator.REG_EXP_FOR_NAME_AND_SURNAME.test(value),
       ['second_name']: (value: string) => Validator.REG_EXP_FOR_NAME_AND_SURNAME.test(value),
 
-      isEmpty: (value: string) => value.trim() !== ''
-    }
+      isEmpty: (value: string) => value.trim() !== '',
+    } as Record<string, (value: string) => boolean>;
 
     return rules[rule] ? rules[rule] : rules.isEmpty;
-  }
+  };
 
   static vaidateOnSubmit(refs: Record<string, Block>, formData: Record<string, string>): boolean {
     const keyRefs = Object.keys(refs);
-    const errors: boolean[] = []
+    const errors: boolean[] = [];
 
-    for(const key of keyRefs) {
+    for (const key of keyRefs) {
       const component = refs[key] as Block;
-      const {value, name, dataset} = (component.refs.input.getContent() as HTMLInputElement);
+      const { value, name, dataset } = (component.refs.input.getContent() as HTMLInputElement);
 
       const validator = Validator.rules(name);
 
-      if(!validator(value)) {
-        if('error' in dataset) {
+      if (!validator(value)) {
+        if ('error' in dataset) {
           component.refs.hint.setState({
             errorMessage: dataset.error,
-          })
+          });
         }
       }
 

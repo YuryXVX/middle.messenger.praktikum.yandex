@@ -1,16 +1,16 @@
-import { User } from "../models/user";
+import { User } from '../models/user';
 
 class ProfileSerive {
   changeUserProfie(user: User) {
-    console.log('[change-user-profile]', user)
+    console.log('[change-user-profile]', user);
   }
 
   changeUserPassword({ oldPassword, newPassword }) {
-    console.log('[change-user-password]', { oldPassword, newPassword })
+    console.log('[change-user-password]', { oldPassword, newPassword });
   }
 
   getUser(id: number) {
-    console.log('[get-user-by-id]', id)
+    console.log('[get-user-by-id]', id);
   }
 }
 

@@ -1,24 +1,32 @@
 import './styles.scss';
 import Block from '../../core/Block';
-import { InputControl } from './input-control';
-import { InputHint } from './input-hint';
-import registerComponent from '../../core/registerComponent';
 import { Validator } from '../../utils/form-validator';
 
-
-registerComponent(InputControl);
-registerComponent(InputHint);
-
+type InputProps = {
+  placeholder: string;
+  id: string;
+  errorMessage: string;
+  events: {
+    input: (evt: InputEvent) => void;
+    focus: () => void;
+    blur: () => void;
+  }
+};
 
 export class Input extends Block {
-  constructor(props) {
+  protected componentName = 'Input';
+
+  constructor(props: InputProps) {
     super({
       ...props,
       placeholder: props.placeholder || '',
       events: {
         input: (evt: InputEvent) => {
           this.validate();
-          this.props.onInput && this.props.onInput(evt);
+
+          if (this.props.onInput) {
+            this.props.onInput(evt);
+          }
         },
         
         focus: () => this.validate(),
@@ -26,7 +34,7 @@ export class Input extends Block {
       },
 
       errorMessage: '',
-    })
+    });
   }
 
   getInputValue(): string {
@@ -38,10 +46,10 @@ export class Input extends Block {
   }
 
   toggleStateInput(valid: boolean) {
-    if(!valid) {
-      this.getInputElement().style.borderColor = 'red'
+    if (!valid) {
+      this.getInputElement().style.borderColor = 'red';
     } else {
-      this.getInputElement().style.borderColor = ''
+      this.getInputElement().style.borderColor = '';
     }
   }
 
@@ -50,10 +58,8 @@ export class Input extends Block {
     const validator = Validator.rules(name);
 
     const valid = validator(this.getInputValue());
-    const value = this.getInputValue();
 
-
-    if(validate && noErrorMessage) {
+    if (validate && noErrorMessage) {
       this.toggleStateInput(valid);
     }
 
@@ -61,15 +67,21 @@ export class Input extends Block {
       ? error 
       : '';
 
+    
+    if (validate) {
+      this.refs.hint.setProps({
+        errorMessage,
+      });
+    }
 
-    validate && this.refs.hint.setProps({
-      errorMessage
-    })
+    
+    if (this.props.onCheck) {
+      this.props.onCheck({
+        name, valid, value: this.getInputValue(), ...(formName && { formName }), 
+      });
+    }
 
-    this.props.onCheck && this.props.onCheck({
-       name, valid, value: this.getInputValue(), ...(formName && { formName }) 
-    });
-  }
+  };
 
 
   render() {
@@ -77,7 +89,17 @@ export class Input extends Block {
       `<fieldset class="form__fieldset">
         <div class="chat__input-wrap chat__input-wrap--error">
           <label class="visually-hidden" for="{{id}}">{{placeholder}}</label>
-          {{{ InputControl error="{{error}}" ref="input" events=events name='{{name}}' type="{{type}}" id="{{id}}" placeholder="{{placeholder}}" variant="{{variant}}" value=value }}}
+            {{{ 
+              InputControl 
+              error="{{error}}" 
+              ref="input"
+              events=events name='{{name}}' 
+              type="{{type}}" 
+              id="{{id}}" 
+              placeholder="{{placeholder}}" 
+              variant="{{variant}}"
+              value=value 
+            }}}
           <div>
             {{#if validate}}
             {{{ InputHint ref="hint" errorMessage="${this.props.errorMessage}" }}}
@@ -86,6 +108,6 @@ export class Input extends Block {
         </div>
       </fieldset>
       `
-    )
+    );
   }
 }

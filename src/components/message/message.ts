@@ -1,17 +1,21 @@
-import Block from "../../core/Block";
-import { User } from '../../models/user'
+import Block from '../../core/Block';
+import { User } from '../../models/user';
 import './styles.scss';
 
 type MessageProps = {
   user: User | string;
   currentId?: number;
   onSelect?: (user: User) => void;
-  events: {};
-}
+  events: {
+    click: () => void;
+  };
+};
 
 export class Message extends Block<MessageProps> {
+  protected componentName = 'Message';
+
   constructor(props: MessageProps) {
-    if(typeof props.user === 'string') {
+    if (typeof props.user === 'string') {
       props.user = JSON.parse(props.user);
     }
 
@@ -19,14 +23,14 @@ export class Message extends Block<MessageProps> {
       ...props,
       events: {
         click: () => props.onSelect ? props.onSelect(this.props.user as User) : () => {},
-      }
+      },
     });
   }
 
   get active(): boolean {
     const userId = (this.props.user as User).id;
 
-    return Number(this.props?.currentId) === userId
+    return Number(this.props?.currentId) === userId;
   }
   
   render() {
@@ -49,7 +53,7 @@ export class Message extends Block<MessageProps> {
             </div>
           </div>
         </div>
-    `)
+    `);
   }
 }
 

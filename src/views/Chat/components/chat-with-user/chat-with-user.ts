@@ -1,57 +1,75 @@
-import { CHAT_WITH_MOCK_USER } from "../../../../constants";
-import Block from "../../../../core/Block";
-import { Message } from "../../../../models/message";
-import { User } from "../../../../models/user";
-import { chatService } from "../../../../services/ChatService";
-import { ChatMessageBlock } from "./chat-message-block";
+import Block from '../../../../core/Block';
+import registerComponent from '../../../../core/registerComponent';
+import { Message } from '../../../../models/message';
+import { User } from '../../../../models/user';
+import { chatService } from '../../../../services/ChatService';
+import { ChatMessageBlock } from './chat-message-block';
+
+// @ts-ignore
+registerComponent('ChatMessageBlock', ChatMessageBlock);
 
 import './styles.scss';
 
 type ChatWithUserViewProps = {
   user: User;
-  messages: Message[];
-}
+  messages?: Message[];
+  loaded?: boolean;
+  onSubmitMessage?: (message: string) => void;
+};
 
-export class ChatWithUserView extends Block<ChatWithUserViewProps>{
-  constructor(props) {
+export class ChatWithUserView extends Block<ChatWithUserViewProps> {
+  protected componentName = 'ChatWithUserView';
+
+  constructor(props: ChatWithUserViewProps) {
     super({
       ...props,
       messages: [],
       loaded: true,
       onSubmitMessage: (message: string) => this.onSubmitMessage(message),
-    })
-
-    this.registerComponent(ChatMessageBlock);
+    });
   }
 
   componentDidMount(): void {
     chatService.getMessagesById(this.props.user.id)
       .then(messages => {
         this.setState({
-          messages
-        })
+          messages,
+        });
       })
       .finally(() => {
-        this.setState({ loaded: false })
-      })
+        this.setState({ loaded: false });
+      });
   }
 
   onSubmitMessage(message: string) {
     chatService.send({ message });
   }
 
-  _renderChat() {
-    return this.props.messages.map(
+  private renderChat() {
+    return this.props.messages!.map(
       message => (
         `{{{  ChatItem message='${JSON.stringify(message)}' }}}`
-      )
+      ),
     )
-    .join(' '); 
+      .join(' '); 
   }
 
 
-  render() {
+  private renderLoader() {
+    return (
+      `<div class="chat-messages__spinner">
+        {{{ Spinner }}}
+      </div>`
+    );
+  }
+
+  renderChatBlock() {
     const { loaded } = this.state;
+
+    return !loaded ? this.renderChat() : this.renderLoader();
+  }
+
+  render() {
 
     return (`
       <div class="chat-messages__block"> 
@@ -62,16 +80,12 @@ export class ChatWithUserView extends Block<ChatWithUserViewProps>{
           </header>
 
           <div class="chat-messages__messages">
-            ${
-              !loaded 
-                ? this._renderChat() 
-                : '<div class="chat-messages__spinner">{{{ Spinner }}}</div>'
-              }
+            ${ this.renderChatBlock() }
           </div>
         </div>
 
        {{{ ChatMessageBlock onSubmitMessage=onSubmitMessage }}}
       </div>
-    `)
+    `);
   }
 }

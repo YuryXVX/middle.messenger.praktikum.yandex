@@ -1,17 +1,9 @@
 import Block from '../../core/Block';
 import './styles.scss';
 
-type LinkProps = {
-  href: string;
-  variant: string;
-  class?: string[]
-  content: string;
-}
 
 export class Link extends Block {
-  constructor(props: LinkProps) {
-    super(props)
-  }
+  protected componentName = 'Link';
 
   render() {
     return (
@@ -22,7 +14,7 @@ export class Link extends Block {
         class="link link--{{variant}} {{class}}">
         {{content}}
       </a>`
-    )
+    );
   }
 }
 

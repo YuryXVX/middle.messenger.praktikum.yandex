@@ -5,9 +5,12 @@ import './styles.scss';
 
 
 export default class UserPage extends Block {
+  protected componentName = 'UserPage'; 
+
   constructor() {
-    super(USER_DATA_MOCK)
+    super(USER_DATA_MOCK);
   }
+
   render() {   
     return (`
       <main class="content-center">
@@ -44,6 +47,6 @@ export default class UserPage extends Block {
         </div>
       </div>
     </main>
-    `)
+    `);
   }
 }

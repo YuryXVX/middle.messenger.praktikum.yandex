@@ -6,11 +6,10 @@ import { SCREENS } from './views';
 
 import './styles/index.scss';
 
-
-Object.values(Components).forEach(Component => {
+Object.entries(Components).forEach(([name, Component]) => {
   // @ts-ignore
-  registerComponent(Component);
-})
+  registerComponent(name, Component);
+});
 
 
 
