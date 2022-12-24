@@ -15,7 +15,5 @@ Object.entries(Components).forEach(([name, Component]) => {
 
 const root = document.querySelector('#root') as HTMLElement;
 
-Router
-  .instance(SCREENS, root)
-  .listen();
+Router.instance(SCREENS, root).listen();
 

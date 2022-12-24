@@ -79,4 +79,3 @@ export default class AuthPage extends Block<AuthPageState> {
     );
   }
 }
-

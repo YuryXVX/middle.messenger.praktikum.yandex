@@ -5,7 +5,7 @@ class ProfileSerive {
     console.log('[change-user-profile]', user);
   }
 
-  changeUserPassword({ oldPassword, newPassword }) {
+  changeUserPassword({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) {
     console.log('[change-user-password]', { oldPassword, newPassword });
   }
 
