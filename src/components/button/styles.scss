@@ -26,6 +26,10 @@
       &:hover {
         opacity: .8;
       }
+
+      &:disabled {
+        opacity: .3;
+      }
     }
 
     &--secondary {

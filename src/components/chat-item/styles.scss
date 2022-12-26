@@ -1,0 +1,43 @@
+.chat {
+  &__message {
+    width: 50%;
+
+    padding: 10px;
+
+    background-color: #efefef;
+
+    border-radius: 12px;
+
+    margin: 10px 0;
+
+    color: #000;
+
+    &--own {
+      color: #fff;
+      background-color: var(--main-color);
+    }
+  }
+
+  &__position {
+    width: 100%;
+    display: flex;
+
+    &--there {
+      justify-content: flex-start;
+    }
+
+    &--own {
+      justify-content: flex-end;
+    }
+  }
+
+  &__message-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__message-time {
+    font-size: 9px;
+    color: #999999;
+  }
+}
