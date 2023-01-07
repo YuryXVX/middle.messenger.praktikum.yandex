@@ -78,16 +78,22 @@ export default class Block<P extends object = any> {
   init() {
     this._createResources();
     this.eventBus().emit(Block.EVENTS.FLOW_RENDER, this.props);
+
+    this.componentBeforeMount();
   }
+
+  componentBeforeMount() {}
 
   _componentDidMount(props: P) {
     this.componentDidMount(props);
   }
 
+
   componentDidMount(props: P) {}
 
   _componentDidUpdate(oldProps: P, newProps: P) {
     const response = this.componentDidUpdate(oldProps, newProps);
+
     if (!response) {
       return;
     }
@@ -166,6 +172,7 @@ export default class Block<P extends object = any> {
         // Запускаем обновление компоненты
         // Плохой cloneDeep, в след итерации нужно заставлять добавлять cloneDeep им самим
         self.eventBus().emit(Block.EVENTS.FLOW_CDU, { ...target }, target);
+
         return true;
       },
       deleteProperty() {
@@ -210,9 +217,12 @@ export default class Block<P extends object = any> {
      * Рендерим шаблон
      */
     const template = Handlebars.compile(this.render());
-
-
-    fragment.innerHTML = template({ ...this.state, ...this.props, children: this.children, refs: this.refs });
+    fragment.innerHTML = template({
+      ...this.state,
+      ...this.props,
+      children: this.children,
+      refs: this.refs,
+    });
 
     /**
      * Заменяем заглушки на компоненты

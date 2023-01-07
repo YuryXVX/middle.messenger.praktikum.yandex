@@ -19,8 +19,8 @@ export class FormUiValidator {
     return Validator.vaidateOnSubmit(omit(refs, ['button']), this.getFormData()); 
   }
 
-  getFormData() {
+  getFormData<T>() {
     return Object.keys(this.controlsValid)
-      .reduce((payload, key) => ({ ...payload, [key]: this.controlsValid[key].value }), {});
+      .reduce((payload, key) => ({ ...payload, [key]: this.controlsValid[key].value }), {} as T);
   }
 }

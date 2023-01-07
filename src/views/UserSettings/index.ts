@@ -13,7 +13,7 @@ type UserSettingsPageProps = {
 };
 
 export default class UserSettingsPage extends Block<UserSettingsPageProps> {
-  componentName = 'UserSettingsPage';
+  static componentName = 'UserSettingsPage';
 
   formValidator = new FormUiValidator() as FormUiValidator;
 
@@ -82,7 +82,6 @@ export default class UserSettingsPage extends Block<UserSettingsPageProps> {
   
         </div>
       </main>
-    
       `
     );
   }

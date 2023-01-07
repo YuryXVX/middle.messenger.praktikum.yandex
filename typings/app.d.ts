@@ -14,6 +14,11 @@ declare global {
     validate: boolean;
     formName: string;
   };
+
+
+  export type AppState = {
+    user: any | null;
+  };
 }
 
 export {};

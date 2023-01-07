@@ -2,25 +2,38 @@ import Block from './Block';
 
 // минорная версия роутера - захардкожены элементы навигации в html вместо компонента <Link />
 export default class Router {
-  routes: Record<string, typeof Block>;
+  routes: any[];
 
   root: HTMLElement;
 
   page: Block | null;
 
+  prevPage: Block | null;
+
+  store: any;
+
+  next: (route?: any, instance?: Router) => boolean;
+
   static _instance: Router | null;
 
-  constructor(routes: Record<string, any>, root: HTMLElement) {
+  constructor(
+    routes: any[], root: HTMLElement, next: (route?: any, instance?: Router) => boolean, store: any) {
     this.routes = routes;
     this.root = root;
     this.page = null;
 
+    this.store = store;
+
+
+    this.next = next;
+
     this.initListeners();
   }
 
-  static instance(routes: Record<string, any>, root: HTMLElement) {
+  static instance(
+    routes: any[], root: HTMLElement, next: (route?: any, instance?: Router) => boolean, store: any) {
     if (!this._instance) {
-      this._instance = new Router(routes, root);
+      this._instance = new Router(routes, root, next, store);
     }
     return this._instance;
   }
@@ -48,20 +61,15 @@ export default class Router {
     let pathname = decodeURI(window.location.pathname);
 
     let match;
-  
-    for (const [path, page] of Object.entries(this.routes)) {
-      match = pathname === path;
 
-      if (match) {
-        this.changePage(page);
+  
+    for (const route of this.routes) {
+      match = pathname === route.path;
+
+      if (this.next(route, this) && match) {
+        this.changePage(route.component);
         break;
       }
-    }
-
-    if (!match) {
-      const notFoundPage = this.routes['/not-found'];
-      this.changePage(notFoundPage);
-      return;
     }
   }
 
@@ -74,7 +82,11 @@ export default class Router {
   }
 
   render(Page: typeof Block) {
-    this.page = new Page({});
+    if (!this.prevPage) {
+      this.prevPage = new Page({});
+    }
+
+    this.page = new Page({ router: this });
     this.root.append(this.page!.getContent());
   }
 

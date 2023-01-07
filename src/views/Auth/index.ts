@@ -1,23 +1,29 @@
 import Block from '../../core/Block';
+
 import { fields } from './utils/form-config';
 import { FormUiValidator } from '../../utils/form-validator';
-import { authService } from '../../services/AuthSerive';
-import { User } from '../../models/user';
+import { AuthDTO } from '../../models/auth';
+import { withStore } from '../../utils/hocs/withStore';
 
 import './styles.scss';
+import { authService } from '../../services/AuthSerive';
+
 
 type AuthPageState = {
   fields: FieldControl[];
   onCheck: FormUiValidator['onCheck'];
 };
 
-export default class AuthPage extends Block<AuthPageState> {
+class AuthPage extends Block<AuthPageState> {
   protected componentName = 'AuthPage';
+
+  $store: any;
  
   formValudator = new FormUiValidator() as FormUiValidator;
 
-  constructor() {
+  constructor(props: any) {
     super({
+      ...props,
       fields,
       onCheck: ({ formName, valid, value, name }) => (
         this.formValudator.onCheck({ 
@@ -25,21 +31,13 @@ export default class AuthPage extends Block<AuthPageState> {
         })
       ),
     });
+
+    const button = this.refs.button.getContent();
+
+    button.addEventListener('click', () => {
+      this.$store.dispatch({ ...this.formValudator.getFormData<AuthDTO>() });
+    });
   }
-
-  componentDidMount(): void {
-    const form = this.element!.querySelector('form') as HTMLFormElement;
-    form.addEventListener('submit', this.onSubmit);
-  }
-
-
-  onSubmit = (evt: SubmitEvent) => {
-    evt.preventDefault();
-
-    if (this.formValudator.vaidateOnSubmit(this.refs)) {
-      authService.signUp(this.formValudator.getFormData() as Pick<User, 'login' | 'password'>);
-    }
-  };
 
   renderControls() {
     return this.props.fields.map(
@@ -54,17 +52,17 @@ export default class AuthPage extends Block<AuthPageState> {
           validate="${validate}" 
           name="${name}" 
           variant="main" 
+          value=""
           onCheck=onCheck 
         }}}`
       ),
-    )
-      .join(' ');
+    ).join(' ');
   }
 
   render() {
     return (
       `<main class="auth content-center app__page">
-        <form class="form auth__form">
+        <div class="form auth__form">
           <div class="form__wrap auth__from-wrap">
             <legend class="auth__form-title form__title-legend">Вход</legend>
             ${ this.renderControls() }
@@ -72,10 +70,19 @@ export default class AuthPage extends Block<AuthPageState> {
       
           <div class="form__buttons">
             {{{Button ref="button" content="Авторизоваться" type="button" variant="main" }}}
-            {{{Link content="Нет аккаута?" href="/registration" variant="block"}}}
+            {{{Link content="Нет аккаута?" href="/sign-up" variant="block"}}}
           </div>
-        </form>
+        </div>
       </main>`    
     );
   }
 }
+
+
+function mapUserToProps(state: any) {
+  console.log(state);
+  return state;
+}
+
+
+export default withStore(AuthPage, mapUserToProps);
