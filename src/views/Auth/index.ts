@@ -2,41 +2,63 @@ import Block from '../../core/Block';
 
 import { fields } from './utils/form-config';
 import { FormUiValidator } from '../../utils/form-validator';
-import { AuthDTO } from '../../models/auth';
+// import { AuthDTO } from '../../models/auth';
 import { withStore } from '../../utils/hocs/withStore';
 
+import { Store } from '../../core/Store';
+
 import './styles.scss';
-import { authService } from '../../services/AuthSerive';
+import { useServices } from '../../services/init';
+import Router from '../../core/Router';
+import { AuthService } from '../../services/AuthSerive';
 
 
-type AuthPageState = {
+type AuthPageState = Pick<AppState, 'auth'> & {
   fields: FieldControl[];
+  router: Router
   onCheck: FormUiValidator['onCheck'];
 };
 
 class AuthPage extends Block<AuthPageState> {
-  protected componentName = 'AuthPage';
+  static componentName = 'AuthPage';
 
-  $store: any;
+  $store: Store<AppState>;
+
+  $service: AuthService;
+
  
   formValudator = new FormUiValidator() as FormUiValidator;
 
-  constructor(props: any) {
+
+  constructor(props: AuthPageState) {
     super({
       ...props,
       fields,
-      onCheck: ({ formName, valid, value, name }) => (
+    });
+
+    this.$service = useServices(this.$store, this.props.router, AuthService)(AuthService.name);
+  }
+
+  protected getStateFromProps(): void {
+
+
+    this.state = {
+      onLogin: () => {
+        const form = document.querySelector('form');
+
+        form?.addEventListener('submit', e => e.preventDefault());
+        
+        if (this.formValudator.vaidateOnSubmit(this.refs)) {
+          this.$service.auth(this.formValudator.getFormData());
+        }       
+      },
+    
+      onCheck: ({ formName, valid, value, name }: any) => (
         this.formValudator.onCheck({ 
           name, formName, valid, value, 
         })
       ),
-    });
-
-    const button = this.refs.button.getContent();
-
-    button.addEventListener('click', () => {
-      this.$store.dispatch({ ...this.formValudator.getFormData<AuthDTO>() });
-    });
+    };
   }
 
   renderControls() {
@@ -52,7 +74,7 @@ class AuthPage extends Block<AuthPageState> {
           validate="${validate}" 
           name="${name}" 
           variant="main" 
-          value=""
+          value="${this.props[name]}"
           onCheck=onCheck 
         }}}`
       ),
@@ -62,27 +84,30 @@ class AuthPage extends Block<AuthPageState> {
   render() {
     return (
       `<main class="auth content-center app__page">
-        <div class="form auth__form">
+        <form class="form auth__form">
           <div class="form__wrap auth__from-wrap">
             <legend class="auth__form-title form__title-legend">Вход</legend>
             ${ this.renderControls() }
           </div>
+
+          <div>{{ reason }}</div>
       
           <div class="form__buttons">
-            {{{Button ref="button" content="Авторизоваться" type="button" variant="main" }}}
+            {{{Button ref="button" onClick=onLogin content="Авторизоваться" type="button" variant="main" }}}
             {{{Link content="Нет аккаута?" href="/sign-up" variant="block"}}}
           </div>
-        </div>
+        </form>
       </main>`    
     );
   }
 }
 
+const authSelector = (state: AppState) => {
+  return {
+    login: state.auth.login,
+    password: state.auth.password,
+    reason: state.reason,
+  };
+};
 
-function mapUserToProps(state: any) {
-  console.log(state);
-  return state;
-}
-
-
-export default withStore(AuthPage, mapUserToProps);
+export default withStore(AuthPage, authSelector);

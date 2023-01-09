@@ -23,7 +23,7 @@ function queryStringify(data: TRequestData) {
   }, '?');
 }
 
-class HTTPTransport {
+export default class HTTPTransport {
   private baseUrl: string;
 
   constructor(baseUrl: string = '') {
@@ -34,7 +34,7 @@ class HTTPTransport {
     return this.request(url, { ...options, method: METHODS.GET });
   };
 
-  public post = (url: string, options = {}): Promise<XMLHttpRequest> => {
+  public post = <T, U>(url: string, options = {} as U): Promise<T> => {
     return this.request(url, { ...options, method: METHODS.POST });
   };
 
@@ -53,7 +53,7 @@ class HTTPTransport {
   request = (url: string, options: TRequestOptions): any => {
     const {
       method = METHODS.GET,
-      headers = {},
+      headers = { 'Content-Type': 'application/json' },
       data,
       timeout = 5000,
       withCredentials = false,
@@ -95,5 +95,3 @@ class HTTPTransport {
     });
   };
 }
-
-export default new HTTPTransport();

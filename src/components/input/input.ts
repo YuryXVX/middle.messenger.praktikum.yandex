@@ -10,7 +10,8 @@ type InputProps = {
     input: (evt: InputEvent) => void;
     focus: () => void;
     blur: () => void;
-  }
+  },
+  value: string;
 };
 
 export class Input extends Block {

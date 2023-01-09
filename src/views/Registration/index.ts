@@ -2,6 +2,7 @@ import Block from '../../core/Block';
 import { User } from '../../models/user';
 import { authService } from '../../services/AuthSerive';
 import { FormUiValidator } from '../../utils/form-validator';
+import { omit } from '../../utils/objects-utils';
 import { fields } from './utils/form-config';
 
 type RegistrationPageState = {
@@ -28,11 +29,13 @@ export default class RegistrationPage extends Block<RegistrationPageState> {
     form.addEventListener('submit', this.onSubmit);
   }
 
-  onSubmit = (evt: SubmitEvent) => {
+  onSubmit = async (evt: SubmitEvent) => {
     evt.preventDefault();
 
     if (this.formValidator.vaidateOnSubmit(this.refs)) {
-      authService.signUp(this.formValidator.getFormData() as User);
+      const payload = omit(this.formValidator.getFormData() as object, 'repeatPassword');
+
+      await authService.signUp(payload);
     }
   };
 

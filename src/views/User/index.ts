@@ -1,17 +1,51 @@
 import Block from '../../core/Block';
-import { USER_DATA_MOCK } from '../../constants';
+import { useServices } from '../../services/init';
+import { AuthService } from '../../services/AuthSerive';
+import { Store } from '../../core/Store';
+import { withStore } from '../../utils/hocs/withStore';
+import { User } from '../../models/user';
+
+
+import Router from '../../core/Router';
 
 import './styles.scss';
+import { USER_DATA_MOCK } from '../../constants';
 
 
-export default class UserPage extends Block {
+type UserPageProps = {
+  router: Router;
+  user: User;
+};
+
+class UserPage extends Block {
   protected componentName = 'UserPage'; 
 
-  constructor() {
-    super(USER_DATA_MOCK);
+  $service: AuthService;
+
+  $store: Store<AppState>;
+
+  constructor(props: UserPageProps) {
+    super(props);
+
+    this.$service = useServices<AuthService>(this.$store, this.props.router, AuthService)(AuthService.name);
+  }
+
+  protected getStateFromProps(props: any): void {
+    this.state = {
+      ...props,
+      onClick: () => this.signOut(),
+    };
+  }
+
+  signOut() {
+    this.$service.signOut();
   }
 
   render() {   
+    console.log(this.props);
+    // const { email } = this.state.user;
+
+    // console.log(this.state.user);
     return (`
       <main class="content-center">
       {{{BackToButton href="/"}}}
@@ -23,11 +57,11 @@ export default class UserPage extends Block {
 
         <div>
           <ul class="user-page__list">       
-            {{{ListLtem key="Почта" value=email}}}       
-            {{{ListItem key="Логин" value=login}}}      
+            {{{ListLtem key="Почта" value=email }}}       
+            {{{ListItem key="Логин" value=login }}}      
             {{{ListItem key="Имя" value=firstName}}}
-            {{{ListItem key="Фамилия" value=lastName}}}
-            {{{ListItem key="Имя в чате" value=screenName}}}
+            {{{ListItem key="Фамилия" value=secondName}}}
+            {{{ListItem key="Имя в чате" value=displayName}}}
             {{{ListItem key="Телефон" value=phone}}}
           </ul>
         </div>
@@ -41,7 +75,7 @@ export default class UserPage extends Block {
               {{{Link content="Изменить пароль" href="/user-change-password"}}}
             </li{     
             <li>
-              {{{Link content="Выйти" href="/auth"}}}
+              {{{Link content="Выйти" onClick=onClick }}}
             </li>
           </ul>
         </div>
@@ -50,3 +84,11 @@ export default class UserPage extends Block {
     `);
   }
 }
+
+// @ts-ignore
+const userSelector = ({ user }: AppState) => ({ 
+  ...user, avatar: !user.avatar ? USER_DATA_MOCK.avatar : user.avatar,
+});
+
+
+export default withStore(UserPage, userSelector);

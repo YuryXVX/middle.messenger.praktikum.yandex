@@ -17,8 +17,17 @@ declare global {
 
 
   export type AppState = {
-    user: any | null;
+    user: null;
+    auth: {
+      login: string;
+      password: string;
+    }
+
+    reason: string;
+    isLoading: boolean,
   };
+
+  export type AnyLiteral = Record<string, any>;
 }
 
 export {};

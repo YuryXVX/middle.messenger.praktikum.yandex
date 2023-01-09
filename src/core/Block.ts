@@ -1,25 +1,25 @@
 import EventBus from './EventBus';
 import { nanoid } from 'nanoid';
 import Handlebars from 'handlebars';
-import registerComponent from './registerComponent';
-
-interface BlockMeta<P = any> {
-  props: P;
-}
+import { areDeepEqual } from '../utils/objects-utils';
 
 type Events = Values<typeof Block.EVENTS>;
 
-export default class Block<P extends object = any> {
+export interface BlockClass<P> extends Function {
+  new (props: P): Block<P>;
+  componentName?: string;
+}
+
+export default class Block<P = any> {
   static EVENTS = {
     INIT: 'init',
     FLOW_CDM: 'flow:component-did-mount',
     FLOW_CDU: 'flow:component-did-update',
+    FLOW_CWU: 'flow:component-will-unmount',
     FLOW_RENDER: 'flow:render',
   } as const;
 
   public id = nanoid(6);
-
-  private readonly _meta: BlockMeta;
 
   protected _element: Nullable<HTMLElement> = null;
 
@@ -27,24 +27,20 @@ export default class Block<P extends object = any> {
 
   protected children: { [id: string]: Block } = {};
 
-  protected componentName = '' as string;
-
   eventBus: () => EventBus<Events>;
 
   protected state: any = {};
 
-  public refs: { [key: string]: Block } = {};
+  protected refs: Record<string, Block> = {};
+
+  public static componentName?: string;
 
   public constructor(props?: P) {
     const eventBus = new EventBus<Events>();
 
-    this._meta = {
-      props,
-    };
-
     this.getStateFromProps(props);
 
-    this.props = this._makePropsProxy(props || {} as P);
+    this.props = this._makePropsProxy(props || ({} as P));
     this.state = this._makePropsProxy(this.state);
 
     this.eventBus = () => eventBus;
@@ -54,10 +50,26 @@ export default class Block<P extends object = any> {
     eventBus.emit(Block.EVENTS.INIT, this.props);
   }
 
+  /**
+   * Хелпер, который проверяет, находится ли элемент в DOM дереве
+   * И есть нет, триггерит событие COMPONENT_WILL_UNMOUNT
+   */
+  _checkInDom() {
+    const elementInDOM = document.body.contains(this._element);
+
+    if (elementInDOM) {
+      setTimeout(() => this._checkInDom(), 1000);
+      return;
+    }
+
+    this.eventBus().emit(Block.EVENTS.FLOW_CWU, this.props);
+  }
+
   _registerEvents(eventBus: EventBus<Events>) {
     eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
     eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
     eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_CWU, this._componentWillUnmount.bind(this));
     eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
   }
 
@@ -65,35 +77,31 @@ export default class Block<P extends object = any> {
     this._element = this._createDocumentElement('div');
   }
 
-  dispatchComponentDidMount() {
-    this.eventBus().emit(Block.EVENTS.FLOW_CDM);
-
-    return this;
-  }
-
   protected getStateFromProps(props: any): void {
-    this.state = props;
+    this.state = {};
   }
 
   init() {
     this._createResources();
     this.eventBus().emit(Block.EVENTS.FLOW_RENDER, this.props);
-
-    this.componentBeforeMount();
   }
 
-  componentBeforeMount() {}
-
   _componentDidMount(props: P) {
+    this._checkInDom();
     this.componentDidMount(props);
   }
 
-
   componentDidMount(props: P) {}
+
+  _componentWillUnmount() {
+    this.eventBus().destroy();
+    this.componentWillUnmount();
+  }
+
+  componentWillUnmount() {}
 
   _componentDidUpdate(oldProps: P, newProps: P) {
     const response = this.componentDidUpdate(oldProps, newProps);
-
     if (!response) {
       return;
     }
@@ -104,7 +112,7 @@ export default class Block<P extends object = any> {
     return true;
   }
 
-  setProps = (nextProps: P) => {
+  setProps = (nextProps: Partial<P>) => {
     if (!nextProps) {
       return;
     }
@@ -128,14 +136,11 @@ export default class Block<P extends object = any> {
     const fragment = this._compile();
 
     this._removeEvents();
-    const newElement = fragment.firstElementChild! as HTMLElement;
+    const newElement = fragment.firstElementChild!;
 
     this._element!.replaceWith(newElement);
 
-    // @ts-ignore
-    this._element = newElement as NonNullable<Element>;
-    
-
+    this._element = newElement as HTMLElement;
     this._addEvents();
   }
 
@@ -147,7 +152,9 @@ export default class Block<P extends object = any> {
     // Хак, чтобы вызвать CDM только после добавления в DOM
     if (this.element?.parentNode?.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
       setTimeout(() => {
-        if (this.element?.parentNode?.nodeType !==  Node.DOCUMENT_FRAGMENT_NODE ) {
+        if (
+          this.element?.parentNode?.nodeType !== Node.DOCUMENT_FRAGMENT_NODE
+        ) {
           this.eventBus().emit(Block.EVENTS.FLOW_CDM);
         }
       }, 100);
@@ -156,7 +163,7 @@ export default class Block<P extends object = any> {
     return this.element!;
   }
 
-  _makePropsProxy(props: any): any {
+  _makePropsProxy = (props: any) => {
     // Можно и так передать this
     // Такой способ больше не применяется с приходом ES6+
     const self = this;
@@ -172,14 +179,13 @@ export default class Block<P extends object = any> {
         // Запускаем обновление компоненты
         // Плохой cloneDeep, в след итерации нужно заставлять добавлять cloneDeep им самим
         self.eventBus().emit(Block.EVENTS.FLOW_CDU, { ...target }, target);
-
         return true;
       },
       deleteProperty() {
         throw new Error('Нет доступа');
       },
     }) as unknown as P;
-  }
+  };
 
   _createDocumentElement(tagName: string) {
     return document.createElement(tagName);
@@ -191,7 +197,6 @@ export default class Block<P extends object = any> {
     if (!events || !this._element) {
       return;
     }
-
 
     Object.entries(events).forEach(([event, listener]) => {
       this._element!.removeEventListener(event, listener);
@@ -243,6 +248,7 @@ export default class Block<P extends object = any> {
        * Заменяем заглушку на component._element
        */
       const content = component.getContent();
+
       stub.replaceWith(content);
 
       /**
@@ -261,42 +267,14 @@ export default class Block<P extends object = any> {
     return fragment.content;
   }
 
-
-  show() {
-    this.getContent().style.display = 'block';
-  }
-
-  hide() {
-    this.getContent().style.display = 'none';
-  }
-
-  componentWillUnmount() {}
-
-  componentWillDestoy() {}
-
   destroy() {
-    this.componentWillUnmount();
+    this.eventBus().emit(Block.EVENTS.FLOW_CWU);
 
-    if (this.children) {
-      Object.values(this.children).forEach((child) => {
-        child.componentWillUnmount();
-      });
-    }
-
+    this.element?.remove();
     this._removeEvents();
 
-    this._element?.remove();
-
-    this._element = null;
-
-    this.componentWillDestoy();
-
-    if (this.children) {
-      Object.values(this.children).forEach((child) => {
-        child.componentWillDestoy();
-      });
-    }
-
-    this.children = {};
+    Object.keys(this.children).forEach(child => {
+      this.children[child].destroy();
+    });
   }
 }

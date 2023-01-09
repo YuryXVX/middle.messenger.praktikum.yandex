@@ -7,7 +7,7 @@ import RegistrationPage from './Registration';
 import UserPage from './User';
 import UserSettingsPage from './UserSettings';
 
-export const SCREENS = {
+export const Views = {
   '/': ChatPage,
   '/auth': AuthPage,
   '/not-found': NotFoundPage,
