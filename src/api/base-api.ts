@@ -15,13 +15,21 @@ export default class BaseApi {
     return `/${this.path}/${url}`;
   }
 
-  post<P, U extends object>(url: string, payload: U): Promise<P> {
-    return this.http.post<P, U>(this.getPath(url), payload);
+  async post<T>(url: string, payload: any): Promise<T> {
+    const result = await this.http.post(this.getPath(url), payload);
+
+    if (result.response === 'OK') return result.response;
+
+    return JSON.parse(result.response) as T;
   }
 
   get(url: string) {
     return this.http.get(this.getPath(url), {
       withCredentials: true,
     });
+  }
+
+  put(url: string, options?: {}) {
+    return this.http.put(this.getPath(url), options);
   }
 }

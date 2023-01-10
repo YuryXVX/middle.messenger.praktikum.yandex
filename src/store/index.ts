@@ -7,7 +7,16 @@ const INITIAL_STATE = {
     password: '',
   },
 
-  isError: false,
+  registration: {
+    email: '',
+    first_name: '',
+    second_name: '',
+    login: '',
+    password: '',
+    phone: '',
+    repeatPassword: '',
+  },
+
   reason: '',
 } as AppState;
 

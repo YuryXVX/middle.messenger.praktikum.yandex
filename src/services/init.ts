@@ -11,7 +11,6 @@ export const useServices = <T extends object = any>(
 
   return (service: string) => {
     if (!hasCache) {
-      // @ts-ignore
       servicesCache.set(service, new Service(store, router));
     }
 

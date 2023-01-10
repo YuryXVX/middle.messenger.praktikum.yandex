@@ -29,13 +29,15 @@ export class Validator {
 
     for (const key of keyRefs) {
       const component = refs[key] as Block;
+
       const { value, name, dataset } = (component.refs.input.getContent() as HTMLInputElement);
 
       const validator = Validator.rules(name);
 
       if (!validator(value)) {
         if ('error' in dataset) {
-          component.refs.hint.setState({
+
+          component.refs.hint.setProps({
             errorMessage: dataset.error,
           });
         }

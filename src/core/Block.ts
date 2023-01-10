@@ -1,7 +1,14 @@
 import EventBus from './EventBus';
 import { nanoid } from 'nanoid';
+// @ts-ignore
 import Handlebars from 'handlebars';
-import { areDeepEqual } from '../utils/objects-utils';
+// import { areDeepEqual } from '../utils/objects-utils';
+
+import { 
+  applyDiff,
+} from '../utils/applyDiff';
+
+let prevNode;
 
 type Events = Values<typeof Block.EVENTS>;
 
@@ -10,7 +17,7 @@ export interface BlockClass<P> extends Function {
   componentName?: string;
 }
 
-export default class Block<P = any> {
+export default class Block<P = object> {
   static EVENTS = {
     INIT: 'init',
     FLOW_CDM: 'flow:component-did-mount',
@@ -31,7 +38,7 @@ export default class Block<P = any> {
 
   protected state: any = {};
 
-  protected refs: Record<string, Block> = {};
+  refs: Record<string, Block> = {};
 
   public static componentName?: string;
 
@@ -117,7 +124,7 @@ export default class Block<P = any> {
       return;
     }
 
-    Object.assign(this.props, nextProps);
+    Object.assign(this.props as object, nextProps);
   };
 
   setState = (nextState: any) => {
@@ -140,7 +147,8 @@ export default class Block<P = any> {
 
     this._element!.replaceWith(newElement);
 
-    this._element = newElement as HTMLElement;
+    this._element = newElement;
+
     this._addEvents();
   }
 

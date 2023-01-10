@@ -15,16 +15,50 @@ declare global {
     formName: string;
   };
 
+  export type UserDTO = {
+    id: number,
+    first_name: string;
+    second_name: string;
+    display_name: string;
+    login: string;
+    email: string;
+    phone: string,
+    avatar: string;
+  };
+
+  export type UserSignUpDTO = {
+    first_name: string;
+    second_name: string;
+    login: string;
+    email: string;
+    password: string;
+    phone: string;
+    repeatPassword: string;
+  };
+
+  export type UserEntity = {
+    id: number;
+    firstName: string;
+    secondName: string;
+    displayName: string;
+    login: string;
+    email: string;
+    phone: string;
+    avatar: string;
+  };
 
   export type AppState = {
-    user: null;
+    user: UserEntity | null;
     auth: {
       login: string;
       password: string;
     }
 
+    registration: UserSignUpDTO;
+
     reason: string;
     isLoading: boolean,
+
   };
 
   export type AnyLiteral = Record<string, any>;

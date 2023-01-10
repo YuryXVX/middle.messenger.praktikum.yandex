@@ -1,33 +1,9 @@
 import { AuthApi } from '../api/auth-api';
 import Router from '../core/Router';
 import { Store } from '../core/Store';
-// import { ErrorRequest } from '../models/auth';
 import { AuthDTO } from '../models/auth';
-// import { User } from '../models/user';
-
-function toObjectWithCamelCase<T extends object>(obj: T) {
-  return Object.keys(obj).reduce((accum, key) => {
-    const keySymbols = key.split('_');
-
-    if (keySymbols.length >= 2) {
-      const camelkey = keySymbols.map((s, i) => {
-        if (i !== 0) {
-          return s[0].toUpperCase() + s.slice(1);
-        }
-
-        return s;
-      }).join('');
-
-      accum[camelkey] = obj[key];
-    } else {
-      accum[key] = obj[key];
-
-    }
-
-    return accum;
-  }, {});
-}
-
+import { omit, toObjectWithCamelCase } from '../utils/objects-utils';
+import { authHasError } from '../utils/type-guards/authHasError';
 
 export class AuthService {
   authApi = new AuthApi();
@@ -36,37 +12,66 @@ export class AuthService {
 
   router: Router;
 
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(store: Store<AppState>, router: Router) {
     this.store = store;
     this.router = router;
   }
 
-  auth = async (authDTO: AuthDTO) => {
+  auth = async (auth: AuthDTO) => {
     try {
-      this.store.dispatch({ auth: authDTO });
+      this.store.dispatch({ auth });
 
-      await this.authApi.signIn(authDTO);
+      const result = await this.authApi.signIn(auth);
+
+      if (authHasError(result)) {
+        this.store.dispatch({ reason: result.reason  });
+        return;
+      }
+
       const user = await this.authApi.user();
 
-
-      this.store.dispatch({ user });
+      this.store.dispatch({ 
+        user: toObjectWithCamelCase<UserDTO, UserEntity>(user), 
+      });
 
       this.router.go('/');
 
-    } catch (reason: unknown) {
-      const error = reason as Record<string, string>;
+    } catch (error: any) {
+      const jsonError = JSON.parse(error.response) as Record<string, string>;
 
-      this.store.dispatch({ reason: error.response });
-
+      if (authHasError(jsonError)) {
+        this.store.dispatch({ reason: jsonError.reason });
+      }
     } finally {
       // this.store.dispatch({ isError: false });
     }
   };
 
-  signUp = async (payload: any, router: Router) => {
-    await this.authApi.signUp(payload);
-    router.go('/');
+  signUp = async (userSignUpDTO: UserSignUpDTO) => {
+    this.store.dispatch({ registration: userSignUpDTO });
+
+    try {
+      const result = await this.authApi.signUp(
+        // @ts-ignore
+        omit(userSignUpDTO, 'repeatPassword'),
+      );
+
+      if (authHasError(result)) {
+        return;
+      }
+
+      await this.me();
+
+      this.router.go('/');
+
+    } catch (error: any) {
+      const jsonError = JSON.parse(error.response) as Record<string, string>;
+
+      if (authHasError(jsonError)) {
+        this.store.dispatch({ reason: jsonError.reason });
+      }
+    }
+  
   };
 
   me = async () => {
@@ -74,7 +79,7 @@ export class AuthService {
     try {
       const user = await this.authApi.user();
 
-      this.store.dispatch({ user: toObjectWithCamelCase(user) }); 
+      this.store.dispatch({ user: toObjectWithCamelCase<UserDTO, UserEntity>(user) }); 
     } catch (error) {
       this.router.go('/sign-in');
     } finally {
@@ -86,6 +91,8 @@ export class AuthService {
 
   signOut = async () => {
     await this.authApi.signOut();
+
     this.router.go('/sign-in');
+    this.store.dispatch({ user: null });
   };
 }

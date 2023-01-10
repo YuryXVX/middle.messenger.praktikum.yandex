@@ -51,7 +51,34 @@ export function areDeepEqual<T extends any>(value1: T, value2: T): boolean {
 
   const object1 = value1 as AnyLiteral;
   const object2 = value2 as AnyLiteral;
+
+
+  if (!object1 || !object2) return false;
+  
   const keys1 = Object.keys(object1);
 
   return keys1.every((key1) => areDeepEqual(object1[key1], object2[key1]));
+}
+
+export function toObjectWithCamelCase<T, U>(obj: T): U {
+  return (Object.keys(obj)).reduce((accum, key) => {
+    const keySymbols = key.split('_') as string[];
+
+    if (keySymbols.length >= 2) {
+      const camelkey = keySymbols.map((s, i) => {
+        if (i !== 0) {
+          return s[0].toUpperCase() + s.slice(1);
+        }
+
+        return s;
+      }).join('') as string;
+
+      accum[camelkey] = obj[key];
+    } else {
+      accum[key] = obj[key];
+
+    }
+
+    return accum;
+  }, {} as Record<string, T>);
 }

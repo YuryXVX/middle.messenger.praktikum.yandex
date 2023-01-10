@@ -1,7 +1,6 @@
 import Block from '../../core/Block';
 import { useServices } from '../../services/init';
 import { AuthService } from '../../services/AuthSerive';
-import { Store } from '../../core/Store';
 import { withStore } from '../../utils/hocs/withStore';
 import { User } from '../../models/user';
 
@@ -22,11 +21,10 @@ class UserPage extends Block {
 
   $service: AuthService;
 
-  $store: Store<AppState>;
-
   constructor(props: UserPageProps) {
     super(props);
 
+    // @ts-expect-error
     this.$service = useServices<AuthService>(this.$store, this.props.router, AuthService)(AuthService.name);
   }
 
@@ -87,8 +85,10 @@ class UserPage extends Block {
 
 // @ts-ignore
 const userSelector = ({ user }: AppState) => ({ 
-  ...user, avatar: !user.avatar ? USER_DATA_MOCK.avatar : user.avatar,
+// @ts-ignore
+  ...user ?? {}, avatar: !user.avatar ? USER_DATA_MOCK.avatar : user.avatar,
 });
 
 
+// @ts-ignore
 export default withStore(UserPage, userSelector);

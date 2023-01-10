@@ -1,28 +1,37 @@
-// import { BlockClass, Store } from 'core';
-
+import Block from '../../core/Block';
+import { Store } from '../../core/Store';
 import { store } from '../../store';
 import { areDeepEqual } from '../objects-utils';
 
-// type WithStateProps = { store: Store<AppState> };
+type WithStateProps = { store: Store<AppState> };
 
-export function withStore(WrappedBlock: any, mapStateToProps: (state: Indexed) => Indexed) {
+export function withStore<P extends WithStateProps>(
+  WrappedBlock: Block<P>, mapStateToProps: (state: Indexed) => Indexed,
+) {
   // @ts-expect-error No base constructor has the specified
   return class extends WrappedBlock<P> {
+    $store: Store<AppState>;
+
+    private onChangeStoreCallback: () => void;
+
+    // @ts-expect-error
     public static componentName = WrappedBlock.componentName || WrappedBlock.name;
 
-    constructor(props: any) {
+  
+    constructor(props: WithStateProps) {
       let state = mapStateToProps(store.getState());
 
-      super({ ...props, ...state });
+      super({ ...props, ...state, store });
 
       this.$store = store;
 
       this.onChangeStoreCallback = () => {
         const newState = mapStateToProps(store.getState());
+        
         const isEqual = areDeepEqual(state, newState);
 
         if (isEqual) return;
-
+        // @ts-expect-error this is not typed
         this.setProps({ ...this.props, ...newState });
       };
 
@@ -34,5 +43,5 @@ export function withStore(WrappedBlock: any, mapStateToProps: (state: Indexed) =
       super.componentWillUnmount();
       store.off('changed', this.onChangeStoreCallback);
     }
-  };
-}
+  } as Block<Omit<P, 'store'>>;
+} 
